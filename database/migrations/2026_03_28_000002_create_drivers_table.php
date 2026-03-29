@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('drivers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('dui');
             $table->string('license_number');
             $table->date('license_expiration');
             $table->boolean('is_available')->default(true);
