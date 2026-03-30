@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use phpDocumentor\Reflection\Types\Nullable;
 
 class RouteRequest extends FormRequest
 {
@@ -28,8 +29,8 @@ class RouteRequest extends FormRequest
             'origin' => ['required','string'],
             'destination' => ['required','string'],
             'distance_km' => ['required', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
-            'estimated_fuel' => ['required', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
-            'status' => ['required', 'in:pendiente,aprobada,finalizada'],
+            'estimated_fuel' => ['nullable', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
+            'status' => ['nullable', 'in:pendiente,aprobada,finalizada'],
         ];
     }
 }
