@@ -29,7 +29,7 @@ class VehicleRequest extends FormRequest
             'year' => ['required','integer', 'digits:4', 'min:1950'],
             'type' => ['required','string'],
             'capacity' => ['required', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
-            'status' => ['required', 'in:activo,mantenimiento'],
+            'status' => ['required', 'in:activo,mantenimiento'], //seria buneo poner su esta en ruta tambien
             'fuel_level' => ['required', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
             'current_mileage' => ['required', 'numeric', 'min:0', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
         ];

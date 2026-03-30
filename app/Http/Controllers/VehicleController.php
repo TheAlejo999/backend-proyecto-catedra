@@ -20,7 +20,7 @@ class VehicleController extends Controller
         //Considerare cuales de estos filtros realmente ayudan al negocio
         $vehicles = $request->validated();
         $vehicles = Vehicle::when($request->has('plate'), function ($query) use ($request) {
-            $query->where('plate_number', 'like', $request->input('plate').'%');
+            $query->where('plate_number', $request->input('plate'));
         })->when($request->has('year'), function ($query) use ($request) {
             $query->where('year', $request->input('year'));
         })->when($request->has('type'), function ($query) use ($request) {
