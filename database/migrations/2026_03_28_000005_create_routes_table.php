@@ -10,13 +10,11 @@ return new class extends Migration
     {
         Schema::create('routes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vehicle_id')->constrained('vehicles')->onDelete('cascade');
-            $table->foreignId('driver_id')->constrained('drivers')->onDelete('cascade');
             $table->string('origin');
             $table->string('destination');
             $table->decimal('distance_km', 8, 2);
-            $table->decimal('estimated_fuel', 8, 2);
-            $table->enum('status', ['pendiente', 'aprobada', 'finalizada'])->default('pendiente');
+            $table->string('estimated_time');
+            $table->enum('status', ['pendiente', 'en_progreso', 'finalizada', 'cancelada'])->default('pendiente');
             $table->timestamps();
         });
     }

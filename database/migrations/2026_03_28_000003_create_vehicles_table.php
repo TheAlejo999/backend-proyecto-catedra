@@ -10,15 +10,18 @@ return new class extends Migration
     {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('fleet_id')->nullable()->constrained('fleets')->nullOnDelete();
+            $table->foreignId('driver_id')->nullable()->constrained('drivers')->nullOnDelete();
             $table->string('plate_number')->unique();
-            $table->string('model');
             $table->string('brand');
+            $table->string('model');
             $table->year('year');
-            $table->string('type');
-            $table->decimal('capacity', 8, 2);
-            $table->enum('status', ['activo', 'mantenimiento'])->default('activo');
-            $table->decimal('fuel_level', 8, 2);
-            $table->decimal('current_mileage', 10, 2);
+            $table->enum('type', ['pickup', 'camion', 'sedan', 'rastra']);
+            $table->decimal('capacity_weight_kg', 10, 2);
+            $table->decimal('current_mileage', 12, 2);
+            $table->decimal('fuel_percentage', 5, 2);
+            $table->decimal('fuel_consumption_per_km', 8, 3);
+            $table->enum('status', ['disponible', 'mantenimiento', 'en_ruta'])->default('disponible');
             $table->timestamps();
         });
     }

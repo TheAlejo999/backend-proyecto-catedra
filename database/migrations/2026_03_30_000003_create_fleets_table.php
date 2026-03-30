@@ -8,17 +8,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('drivers', function (Blueprint $table) {
+        Schema::create('fleets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->unique()->constrained('users')->onDelete('cascade');
-            $table->string('license_number')->unique();
-            $table->date('license_expiration');
+            $table->string('name');
+            $table->enum('type', ['liviana', 'pesada', 'ligera']);
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('drivers');
+        Schema::dropIfExists('fleets');
     }
 };
