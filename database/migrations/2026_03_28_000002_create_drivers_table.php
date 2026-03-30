@@ -13,6 +13,7 @@ return new class extends Migration
             $table->foreignId('user_id')->unique()->constrained('users')->onDelete('cascade');
             $table->string('license_number')->unique();
             $table->date('license_expiration');
+            $table->boolean('is_available')->default(true);
             $table->timestamps();
         });
     }
