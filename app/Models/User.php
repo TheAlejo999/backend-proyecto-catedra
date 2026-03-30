@@ -22,6 +22,20 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
+
+     protected $fillable = [
+        'dui',
+        'name',
+        'email',
+        'password',
+        'role_id'
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+    
     protected function casts(): array
     {
         return [
