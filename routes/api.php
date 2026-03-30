@@ -13,9 +13,11 @@ Route::group(['prefix' => 'v1'], function () {
   //  Route::get('profile', [AuthController::class, 'profile']);
 
     // Vehicles
-    Route::get('books', [VehicleController::class, 'index']);
-    Route::post('loans', [VehicleController::class, 'store']);
-    Route::patch('loans', [VehicleController::class, 'update']);
-    Route::delete('loans', [VehicleController::class, 'destroy']);
+    Route::get('vehicles', [VehicleController::class, 'index']);
+    Route::post('vehicles', [VehicleController::class, 'store']);
+    Route::get('/vehicles/{vehicle}', [VehicleController::class, 'show']);
+    Route::patch('/vehicles/{vehicle}', [VehicleController::class, 'update']);
+    Route::delete('/vehicles/{vehicle}', [VehicleController::class, 'destroy']);
+    Route::post('/vehicles/{vehicle}/restore', [VehicleController::class, 'restore']);
 });
 

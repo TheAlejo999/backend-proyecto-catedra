@@ -6,17 +6,12 @@ use Illuminate\Http\Request;
 
 class FuelSupplyController extends Controller
 {
-    public function index()
-    {
-        //
-    }
-
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      */
-    public function create()
+    public function index(Request $request)
     {
-        //
+
     }
 
     /**
@@ -31,14 +26,6 @@ class FuelSupplyController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
     {
         //
     }
