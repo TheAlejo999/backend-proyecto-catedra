@@ -14,6 +14,13 @@ class FuelSupplyResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'vehicle' => VehicleResource::make($this->whenLoaded('vehicle')),
+            'route'  => RouteResource::make($this->whenLoaded('vehicle')),
+            'amount_gallons' => $this->amount_gallons,
+            'total_cost'=> $this->total_cost,
+            'date' => $this->date
+        ];
     }
 }

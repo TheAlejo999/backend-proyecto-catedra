@@ -12,7 +12,7 @@ class FuelSupplyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,11 @@ class FuelSupplyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'vehicle_id' => ['required', 'exists:vehicles,id'],
+            'route_id' => ['required', 'exists:routes,id'],
+            'amount_gallons' => ['required', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
+            'total_cost' => ['required', 'numeric', 'min:0', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
+            'date' => ['required', 'date', 'before_or_equal:today']
         ];
     }
 }

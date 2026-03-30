@@ -12,7 +12,7 @@ class RouteRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,13 @@ class RouteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'vehicle_id' => ['required', 'exists:vehicles,id'],
+            'driver_id' => ['required', 'exists:drivers,id'],
+            'origin' => ['required','string'],
+            'destination' => ['required','string'],
+            'distance_km' => ['required', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
+            'estimated_fuel' => ['required', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
+            'status' => ['required', 'in:pendiente,aprobada,finalizada'],
         ];
     }
 }
