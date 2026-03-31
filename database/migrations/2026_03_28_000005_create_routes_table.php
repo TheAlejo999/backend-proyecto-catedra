@@ -14,7 +14,6 @@ return new class extends Migration
             $table->string('destination');
             $table->decimal('distance_km', 8, 2);
             $table->string('estimated_time');
-            $table->enum('status', ['pendiente', 'aprobada', 'en_progreso','finalizada', 'cancelada'])->default('pendiente');
             $table->timestamps();
         });
     }
