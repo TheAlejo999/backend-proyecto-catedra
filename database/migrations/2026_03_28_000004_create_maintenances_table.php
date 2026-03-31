@@ -16,6 +16,7 @@ return new class extends Migration
             $table->date('date');
             $table->decimal('next_maintenance_mileage', 10, 2);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

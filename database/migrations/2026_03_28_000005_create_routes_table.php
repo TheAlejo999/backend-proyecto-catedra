@@ -15,6 +15,7 @@ return new class extends Migration
             $table->decimal('distance_km', 8, 2);
             $table->string('estimated_time');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

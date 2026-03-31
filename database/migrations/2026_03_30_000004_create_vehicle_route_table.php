@@ -18,6 +18,7 @@ return new class extends Migration
             $table->dateTime('estimated_arrival_datetime')->nullable(); //este lo calculara el controlador
             $table->enum('status', ['pendiente', 'aprobada', 'en_progreso','finalizada', 'cancelada'])->default('pendiente');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

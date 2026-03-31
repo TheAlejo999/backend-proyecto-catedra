@@ -15,6 +15,7 @@ return new class extends Migration
             $table->date('license_expiration');
             $table->boolean('is_available')->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

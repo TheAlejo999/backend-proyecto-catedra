@@ -14,6 +14,7 @@ return new class extends Migration
             $table->enum('type', ['liviana', 'pesada', 'ligera']);
             $table->text('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

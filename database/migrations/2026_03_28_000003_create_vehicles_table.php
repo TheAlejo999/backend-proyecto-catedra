@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('fuel_consumption_per_km', 8, 3);
             $table->enum('status', ['disponible', 'mantenimiento', 'en_ruta'])->default('disponible');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
