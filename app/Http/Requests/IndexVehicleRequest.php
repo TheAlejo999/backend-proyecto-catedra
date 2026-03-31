@@ -27,11 +27,10 @@ class IndexVehicleRequest extends FormRequest
             'model' => ['nullable', 'string'],
             'year' => ['nullable', 'integer', 'digits:4', 'min:1950'],
             'type' => ['nullable', 'string'],
-            'capacity' => ['nullable', 'numeric', 'min:0'],
+            'capacity_weight_kg' => ['nullable', 'numeric', 'min:0'],
             'status' => ['nullable', 'string'],
-            'fuel_level' => ['nullable', 'numeric', 'min:0'],
+            'fuel_percentage' => ['nullable', 'numeric', 'min:0'],
             'current_mileage' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 }
-

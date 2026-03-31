@@ -16,15 +16,18 @@ class VehicleResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'fleet_id' => FleetResource::make($this->whenLoaded('fleet')),
+            'driver_id' => DriverResource::make($this->whenLoaded('driver')),
             'plate_number' => $this->plate_number,
             'model' => $this->model,
             'brand' => $this->brand,
             'year' => $this->year,
             'type' => $this->type,
-            'capacity' => $this->capacity,
-            'status' => $this->status,
-            'fuel_level' => $this->fuel_level,
-            'current_mileage' => $this->current_mileage
+            'capacity_weight_kg' => $this->capacity_weight_kg,
+            'current_mileage' => $this->current_mileage,
+            'fuel_percentage' => $this->fuel_percentage,
+            'fuel_consumption_per_km' => $this->fuel_consumption_per_km,
+            'status' => $this->status
         ];
     }
 }

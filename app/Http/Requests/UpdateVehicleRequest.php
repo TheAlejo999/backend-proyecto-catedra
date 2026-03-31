@@ -23,15 +23,18 @@ class UpdateVehicleRequest extends FormRequest
     public function rules(): array
     {
         return [
+            //'fleet_id' => ['exists:fleets,id'], //suponiendo que asi se llama la tabla
+            //'driver_id' => ['exists:drivers,id'], //suponiendo que asi se llama la tabla
             'plate_number' => ['string', 'max:11','regex:/^[A-Z]{1,4}\d{0,3}[0-9A-F]{3}$/', 'unique:vehicles,plate_number'],
             'model' => ['string'],
             'brand' => ['string', 'max:50'],
             'year' => ['integer', 'digits:4', 'min:1950'],
-            'type' => ['string'],
-            'capacity' => ['numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
-            'status' => ['in:activo,mantenimiento'],
-            'fuel_level' => ['numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
-            'current_mileage' => ['numeric', 'min:0', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
+            'type' => ['string', 'in:pickup,camion,sedan,rastra'],
+            'capacity_weight_kg' => ['numeric', 'min:0', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
+            'current_mileage' => ['numeric', 'min:0', 'regex:/^\d{1,10}(\.\d{1,2})?$/'],
+            'fuel_percentage' => ['numeric', 'min:0', 'regex:/^\d{1,3}(\.\d{1,2})?$/'],
+            'fuel_consumption_per_km'  => ['numeric', 'min:0', 'regex:/^\d{1,5}(\.\d{1,3})?$/'],
+            'status' => ['in:disponible,mantenimiento,en_ruta']
         ];
     }
 }

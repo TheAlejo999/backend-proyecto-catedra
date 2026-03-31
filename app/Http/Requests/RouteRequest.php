@@ -24,13 +24,10 @@ class RouteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'vehicle_id' => ['required', 'exists:vehicles,id'],
-            'driver_id' => ['required', 'exists:drivers,id'],
             'origin' => ['required','string'],
             'destination' => ['required','string'],
-            'distance_km' => ['required', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
-            'estimated_fuel' => ['nullable', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
-            'status' => ['nullable', 'in:pendiente,aprobada,finalizada'],
+            'distance_km' => ['nullable', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
+            'estimated_time' => ['nullable', 'string'],
         ];
     }
 }

@@ -1,13 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 
 class RouteController extends Controller
 {
-    public function index(IndexVehicleRequest $request)
-    {
+    public function index(Request $request)
+    { 
         //Considerare cuales de estos filtros realmente ayudan al negocio
         $vehicles = $request->validated();
         $vehicles = Vehicle::when($request->has('plate'), function ($query) use ($request) {

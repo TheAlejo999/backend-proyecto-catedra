@@ -28,9 +28,9 @@ class VehicleController extends Controller
         })->when($request->has('status'), function ($query) use ($request) {
             $query->where('status', 'like', $request->input('status').'%');
         })->when($request->has('fuel'), function ($query) use ($request) {
-            $query->where('fuel_level', 'like', $request->input('fuel').'%');
+            $query->where('fuel_percentage', 'like', $request->input('fuel').'%');
         })->when($request->has('capacity'), function ($query) use ($request) {
-            $query->where('capacity', 'like', $request->input('capacity').'%');
+            $query->where('capacity_weight_kg', 'like', $request->input('capacity').'%');
         })->when($request->has('mileage'), function ($query) use ($request) {
             $query->where('current_mileage', 'like', $request->input('mileage').'%');
         })

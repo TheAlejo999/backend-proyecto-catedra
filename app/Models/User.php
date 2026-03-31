@@ -24,11 +24,12 @@ class User extends Authenticatable
      */
 
      protected $fillable = [
-        'dui',
+        'role_id',
         'name',
         'email',
         'password',
-        'role_id'
+        'dui',
+        'hiring_date'
     ];
 
     protected $hidden = [
