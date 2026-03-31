@@ -14,6 +14,8 @@ return new class extends Migration
             $table->foreignId('route_id')->constrained('routes')->onDelete('cascade');
             $table->decimal('load_weight', 10, 2);
             $table->decimal('estimated_fuel', 8, 2);
+            $table->dateTime('departure_datetime')->useCurrent();
+            $table->dateTime('estimated_arrival_datetime')->nullable();
             $table->timestamps();
         });
     }
