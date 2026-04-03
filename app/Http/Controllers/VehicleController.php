@@ -14,29 +14,36 @@ class VehicleController extends Controller
 {
     /**
      * Display a listing of the resource.
-    */
-    public function index(IndexVehicleRequest $request)
+     */
+    public function index(Request $request)
     {
-        //Considerare cuales de estos filtros realmente ayudan al negocio
-        $vehicles = $request->validated();
-        $vehicles = Vehicle::when($request->has('plate'), function ($query) use ($request) {
-            $query->where('plate_number', $request->input('plate'));
-        })->when($request->has('year'), function ($query) use ($request) {
-            $query->where('year', $request->input('year'));
-        })->when($request->has('type'), function ($query) use ($request) {
-            $query->where('type',  'like', '%'.$request->input('type').'%');
-        })->when($request->has('status'), function ($query) use ($request) {
-            $query->where('status', 'like', $request->input('status').'%');
-        })->when($request->has('fuel'), function ($query) use ($request) {
-            $query->where('fuel_percentage', 'like', $request->input('fuel').'%');
-        })->when($request->has('capacity'), function ($query) use ($request) {
-            $query->where('capacity_weight_kg', 'like', $request->input('capacity').'%');
-        })->when($request->has('mileage'), function ($query) use ($request) {
-            $query->where('current_mileage', 'like', $request->input('mileage').'%');
-        })
-        ->paginate(16);
 
-        return response()->json(VehicleResource::collection($vehicles), 200);
+        $vehicles = Vehicle::query();
+
+        if ($request->boolean('trashed')) {
+            $vehicles = $vehicles->onlyTrashed()->get();
+        } else {
+            //Considerare cuales de estos filtros realmente ayudan al negocio
+            $vehicles = $vehicles
+            ->when($request->has('plate'), function ($query) use ($request) {
+                $query->where('plate_number', $request->input('plate'));
+            })->when($request->has('year'), function ($query) use ($request) {
+                $query->where('year', $request->input('year'));
+            })->when($request->has('type'), function ($query) use ($request) {
+                $query->where('type', 'like', '%' . $request->input('type') . '%');
+            })->when($request->has('status'), function ($query) use ($request) {
+                $query->where('status', 'like', $request->input('status') . '%');
+            })->when($request->has('fuel'), function ($query) use ($request) {
+                $query->where('fuel_percentage', 'like', $request->input('fuel') . '%');
+            })->when($request->has('capacity'), function ($query) use ($request) {
+                $query->where('capacity_weight_kg', 'like', $request->input('capacity') . '%');
+            })->when($request->has('mileage'), function ($query) use ($request) {
+                $query->where('current_mileage', 'like', $request->input('mileage') . '%');
+            })
+                ->paginate(16);
+
+            return response()->json(VehicleResource::collection($vehicles), 200);
+        }
     }
 
     /**
@@ -57,7 +64,7 @@ class VehicleController extends Controller
         $driver->update([
             'is_available' => false,
         ]);
-        
+
         return response()->json(VehicleResource::make($vehicle), 201);
     }
 
@@ -103,12 +110,12 @@ class VehicleController extends Controller
 
     public function restore(int $vehicle)
     {
-        try{
-        $restoreVehicle = Vehicle::onlyTrashed()->findOrFail($vehicle)->restore();
+        try {
+            $restoreVehicle = Vehicle::onlyTrashed()->findOrFail($vehicle)->restore();
             return response()->json([
                 'message' => 'Vehiculo restaurado correctamente'
             ], 200);
-        } catch (ModelNotFoundException $e){
+        } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'El vehiculo ingresado no existe entre los eliminados'
             ], 404);

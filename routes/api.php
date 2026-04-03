@@ -3,6 +3,7 @@
 use App\Http\Controllers\FuelSupplyController;
 use App\Http\Controllers\RouteController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\VehicleRouteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,14 @@ Route::group(['prefix' => 'v1'], function () {
     Route::patch('/routes/{route}', [RouteController::class, 'update']);
     Route::delete('/routes/{route}', [RouteController::class, 'destroy']);
     Route::post('/routes/{route}/restore', [RouteController::class, 'restore']);
+
+    // Vehicle route
+    Route::get('vehicle-route', [VehicleRouteController::class, 'index']);
+    Route::post('vehicle-route', [VehicleRouteController::class, 'store']);
+    Route::get('/vehicle-route/{vehicleroute}', [VehicleRouteController::class, 'show']);
+    Route::patch('/vehicle-route/{vehicleroute}', [VehicleRouteController::class, 'update']);
+    Route::delete('/vehicle-route/{vehicleroute}', [VehicleRouteController::class, 'destroy']);
+    Route::post('/vehicle-route/{vehicleroute}/restore', [VehicleRouteController::class, 'restore']);
 
     // Fuel Supply
     Route::get('fuel-supplies', [FuelSupplyController::class, 'index']);
