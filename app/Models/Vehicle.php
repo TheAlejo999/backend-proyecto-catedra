@@ -51,3 +51,4 @@ class Vehicle extends Model
 
     esto es mas que todo por orden y estructura
     */
+}

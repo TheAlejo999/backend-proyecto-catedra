@@ -44,10 +44,19 @@ class VehicleController extends Controller
      */
     public function store(VehicleRequest $request)
     {
+        //un auto solo puede tener asignada una flota y un driver
         $data = $request->validated();
 
+        $driver = Driver::findOrFail($request->input('driver_id'));
+
+        if ($driver->is_available === false) {
+            return response()->json(['message' => 'El conductor ya tiene asignado un vehiculo o no esta disponible'], 422);
+        }
+
         $vehicle = Vehicle::create($data);
-        $vehicle->refresh();
+        $driver->update([
+            'is_available' => false,
+        ]);
         
         return response()->json(VehicleResource::make($vehicle), 201);
     }
@@ -65,6 +74,10 @@ class VehicleController extends Controller
      */
     public function update(UpdateVehicleRequest $request, int $vehicle)
     {
+        //el conductor que estaba asignado antes ahora pasa a disponible y 
+        //el nuevo conductor si estaba sin asignar entonces lo cambiamos a asignado y 
+        // estaba asignado lo cambiamos a sin asignar. ESTO ESTA POR DEFINIRSE, AUN NO ESTA ACORDADO POR EL EQUIPO
+
         $updatedVehicle = Vehicle::findOrFail($vehicle);
 
         $data = $request->validated();

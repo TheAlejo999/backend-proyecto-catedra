@@ -26,8 +26,8 @@ class RouteRequest extends FormRequest
         return [
             'origin' => ['required','string'],
             'destination' => ['required','string'],
-            'distance_km' => ['nullable', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
-            'estimated_time' => ['nullable', 'string'],
+            //'distance_km' => ['nullable', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
+            //'estimated_time' => ['nullable', 'string'],
         ];
     }
 }

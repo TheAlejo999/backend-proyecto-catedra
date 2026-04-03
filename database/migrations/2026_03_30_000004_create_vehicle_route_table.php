@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('vehicle_id')->constrained('vehicles')->onDelete('cascade');
             $table->foreignId('route_id')->constrained('routes')->onDelete('cascade');
             $table->decimal('load_weight', 10, 2);
-            $table->decimal('estimated_fuel', 8, 2);
+            $table->decimal('estimated_fuel', 8, 2)->nullable(); //este lo calculara el controlador
             $table->dateTime('departure_datetime')->useCurrent();
             $table->dateTime('estimated_arrival_datetime')->nullable(); //este lo calculara el controlador
             $table->enum('status', ['pendiente', 'aprobada', 'en_progreso','finalizada', 'cancelada'])->default('pendiente');

@@ -23,8 +23,8 @@ class UpdateVehicleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //'fleet_id' => ['exists:fleets,id'], //suponiendo que asi se llama la tabla
-            //'driver_id' => ['exists:drivers,id'], //suponiendo que asi se llama la tabla
+            'fleet_id' => ['exists:fleets,id'], 
+            'driver_id' => ['exists:drivers,id'], 
             'plate_number' => ['string', 'max:11','regex:/^[A-Z]{1,4}\d{0,3}[0-9A-F]{3}$/', 'unique:vehicles,plate_number'],
             'model' => ['string'],
             'brand' => ['string', 'max:50'],

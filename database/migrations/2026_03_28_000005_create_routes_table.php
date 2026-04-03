@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->string('origin');
             $table->string('destination');
-            $table->decimal('distance_km', 8, 2);
-            $table->string('estimated_time');
+            $table->decimal('distance_km', 8, 2)->nullable();
+            $table->string('estimated_time')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
