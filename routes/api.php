@@ -4,6 +4,8 @@ use App\Http\Controllers\FuelSupplyController;
 use App\Http\Controllers\RouteController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VehicleRouteController;
+use App\Http\Controllers\FleetVehicleController;
+use App\Http\Controllers\FleetController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -46,5 +48,17 @@ Route::group(['prefix' => 'v1'], function () {
     Route::patch('/fuel-supplies/{fuel-supply}', [FuelSupplyController::class, 'update']);
     Route::delete('/fuel-supplies/{fuel-supply}', [FuelSupplyController::class, 'destroy']);
     Route::post('/fuel-supplies/{fuel-supply}/restore', [FuelSupplyController::class, 'restore']);
+
+    // Fleets
+    Route::get('fleets', [FleetController::class, 'index']);
+    Route::post('fleets', [FleetController::class, 'store']);
+    Route::get('/fleets/{fleet}', [FleetController::class, 'show']);
+    Route::put('/fleets/{fleet}', [FleetController::class, 'update']);
+    Route::patch('/fleets/{fleet}', [FleetController::class, 'update']);
+    Route::delete('/fleets/{fleet}', [FleetController::class, 'destroy']);
+
+    // Assign/Remove Vehicles to/from Fleet
+    Route::post('/fleets/{fleet}/vehicles', [FleetVehicleController::class, 'store']);
+    Route::delete('/fleets/{fleet}/vehicles/{vehicle}', [FleetVehicleController::class, 'destroy']);
 });
 

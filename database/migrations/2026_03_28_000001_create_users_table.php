@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('role_id')->constrained('roles');
+            $table->foreignId('role_id')->nullable()->constrained('roles')->nullOnDelete(); // cambiar quien haga roles y permisos
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
             $table->string('dui')->unique();
             $table->date('hiring_date');
+            $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

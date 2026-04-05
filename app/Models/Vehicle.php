@@ -2,12 +2,17 @@
 
 namespace App\Models;
 
+use App\Enums\VehicleStatus;
+use App\Enums\VehicleType;
+use App\Models\Driver;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Vehicle extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'fleet_id',
@@ -23,6 +28,10 @@ class Vehicle extends Model
         'fuel_consumption_per_km',
         'status',
     ];
+    protected $casts = [
+        'type'   => VehicleType::class,
+        'status' => VehicleStatus::class,
+    ];
 
     public function fleet()
     {
@@ -32,6 +41,13 @@ class Vehicle extends Model
     public function driver()
     {
         return $this->belongsTo(Driver::class);
+    }
+
+    // Scope para filtrar vehículos disponibles para asignar a una flota
+    public function scopeAvailableForFleet(Builder $query): Builder
+    {
+        return $query->whereNull('fleet_id')
+                     ->where('status', VehicleStatus::Disponible);
     }
 
     /*

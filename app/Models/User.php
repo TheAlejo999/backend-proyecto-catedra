@@ -47,4 +47,8 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Rol::class);
     }
+    public function driver()
+    {
+        return $this->hasOne(Driver::class);
+    }
 }

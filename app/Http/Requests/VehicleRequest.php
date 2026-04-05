@@ -23,8 +23,8 @@ class VehicleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'fleet_id' => ['required', 'exists:fleets,id'], //suponiendo que asi se llama el modelo
-            'driver_id' => ['required', 'exists:drivers,id'], //suponiendo que asi se llama el modelo
+            'fleet_id' => ['nullable', 'exists:fleets,id'], // un vehiculo puede crearse sin asignar a una flota, pero si se asigna, debe existir la flota
+            'driver_id' => ['nullable', 'exists:drivers,id'], // lomismo aca 
             'plate_number' => ['required','string', 'max:11','regex:/^[A-Z]{1,4}\d{0,3}[0-9A-F]{3}$/', 'unique:vehicles,plate_number'],
             'model' => ['required','string'],
             'brand' => ['required','string', 'max:50'],

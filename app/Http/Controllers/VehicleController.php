@@ -9,6 +9,7 @@ use App\Http\Resources\VehicleResource;
 use App\Models\Vehicle;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use App\Models\Driver;
 
 class VehicleController extends Controller
 {
@@ -49,21 +50,24 @@ class VehicleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(VehicleRequest $request)
+     public function store(VehicleRequest $request)
     {
-        //un auto solo puede tener asignada una flota y un driver
         $data = $request->validated();
 
-        $driver = Driver::findOrFail($request->input('driver_id'));
+        // Solo verificar conductor si viene en el request
+        if (!empty($data['driver_id'])) {
+            $driver = Driver::findOrFail($data['driver_id']);
 
-        if ($driver->is_available === false) {
-            return response()->json(['message' => 'El conductor ya tiene asignado un vehiculo o no esta disponible'], 422);
+            if ($driver->is_available === false) {
+                return response()->json([
+                    'message' => 'El conductor ya tiene asignado un vehículo o no está disponible.',
+                ], 422);
+            }
+
+            $driver->update(['is_available' => false]);
         }
 
         $vehicle = Vehicle::create($data);
-        $driver->update([
-            'is_available' => false,
-        ]);
 
         return response()->json(VehicleResource::make($vehicle), 201);
     }
