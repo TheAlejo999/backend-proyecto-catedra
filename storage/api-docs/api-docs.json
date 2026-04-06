@@ -1,0 +1,519 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Flotas API",
+        "description": "API para gestión de flotas vehiculares",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api/v1",
+            "description": "Servidor local"
+        },
+        {
+            "url": "/api/v1"
+        }
+    ],
+    "paths": {
+        "/fleets": {
+            "get": {
+                "tags": [
+                    "Flotas"
+                ],
+                "summary": "Listar todas las flotas",
+                "operationId": "61dde2cd9fb838234e09ffcd5caf36da",
+                "responses": {
+                    "200": {
+                        "description": "Lista de flotas obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Flota Norte"
+                                                    },
+                                                    "type": {
+                                                        "type": "string",
+                                                        "example": "liviana"
+                                                    },
+                                                    "type_label": {
+                                                        "type": "string",
+                                                        "example": "Liviana"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Flota para el norte"
+                                                    },
+                                                    "vehicles_count": {
+                                                        "type": "integer",
+                                                        "example": 3
+                                                    },
+                                                    "created_at": {
+                                                        "type": "string",
+                                                        "example": "2026-01-01 00:00:00"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Flotas"
+                ],
+                "summary": "Crear una nueva flota",
+                "operationId": "3dd58be4d6351c42422b42531ef2e6b8",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Flota Norte"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "liviana",
+                                            "pesada",
+                                            "ligera"
+                                        ],
+                                        "example": "liviana"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Flota para rutas del norte",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Flota creada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Flota creada exitosamente."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Flota Norte"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "liviana"
+                                                },
+                                                "type_label": {
+                                                    "type": "string",
+                                                    "example": "Liviana"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Flota para rutas del norte"
+                                                },
+                                                "vehicles_count": {
+                                                    "type": "integer",
+                                                    "example": 0
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "example": "2026-01-01 00:00:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Datos inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The name field is required."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "El nombre de la flota es obligatorio."
+                                                    }
+                                                },
+                                                "type": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "El tipo debe ser: liviana, pesada o ligera."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/fleets/{fleet}": {
+            "get": {
+                "tags": [
+                    "Flotas"
+                ],
+                "summary": "Ver detalle de una flota",
+                "operationId": "cb6198c7c21bdf07878c642fff3b97b0",
+                "parameters": [
+                    {
+                        "name": "fleet",
+                        "in": "path",
+                        "description": "ID de la flota",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalle de la flota con sus vehículos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Flota Norte"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "liviana"
+                                                },
+                                                "type_label": {
+                                                    "type": "string",
+                                                    "example": "Liviana"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Flota para rutas del norte"
+                                                },
+                                                "vehicles": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "plate_number": {
+                                                                "type": "string",
+                                                                "example": "P123456"
+                                                            },
+                                                            "brand": {
+                                                                "type": "string",
+                                                                "example": "Toyota"
+                                                            },
+                                                            "model": {
+                                                                "type": "string",
+                                                                "example": "Hilux"
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "example": "disponible"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Flota no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [Fleet]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Flotas"
+                ],
+                "summary": "Eliminar una flota",
+                "operationId": "75b583e56a7e57a72626e921b1ca801e",
+                "parameters": [
+                    {
+                        "name": "fleet",
+                        "in": "path",
+                        "description": "ID de la flota",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Flota eliminada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Flota eliminada exitosamente."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "La flota tiene vehículos asignados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se puede eliminar una flota que tiene vehículos asignados."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Flota no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [Fleet]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Flotas"
+                ],
+                "summary": "Actualizar una flota",
+                "operationId": "2561aec9218c950be5db01f62b91d126",
+                "parameters": [
+                    {
+                        "name": "fleet",
+                        "in": "path",
+                        "description": "ID de la flota",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Flota Norte Actualizada"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "liviana",
+                                            "pesada",
+                                            "ligera"
+                                        ],
+                                        "example": "pesada"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Nueva descripción",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Flota actualizada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Flota actualizada exitosamente."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Flota Norte Actualizada"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "example": "pesada"
+                                                },
+                                                "type_label": {
+                                                    "type": "string",
+                                                    "example": "Pesada"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Nueva descripción"
+                                                },
+                                                "vehicles_count": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "example": "2026-01-01 00:00:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Flota no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [Fleet]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Datos inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The type field is invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Flotas",
+            "description": "Flotas"
+        }
+    ]
+}
