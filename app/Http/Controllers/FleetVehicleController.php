@@ -13,6 +13,77 @@ use Illuminate\Http\JsonResponse;
 
 class FleetVehicleController extends Controller
 {
+     /**
+     * @OA\Post(
+     *     path="/fleets/{fleet}/vehicles",
+     *     summary="Asignar vehículos a una flota",
+     *     tags={"Flotas - Vehículos"},
+     *     @OA\Parameter(
+     *         name="fleet",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la flota",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"vehicles"},
+     *             @OA\Property(
+     *                 property="vehicles",
+     *                 type="array",
+     *                 @OA\Items(type="integer", example=1),
+     *                 example={1, 2, 3}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Proceso de asignación completado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Proceso de asignación completado."),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="fleet", type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="name", type="string", example="Flota Norte"),
+     *                     @OA\Property(property="type", type="string", example="liviana"),
+     *                     @OA\Property(property="vehicles", type="array",
+     *                         @OA\Items(
+     *                             @OA\Property(property="id", type="integer", example=1),
+     *                             @OA\Property(property="plate_number", type="string", example="P123456"),
+     *                             @OA\Property(property="status", type="string", example="disponible")
+     *                         )
+     *                     )
+     *                 ),
+     *                 @OA\Property(property="assigned", type="array",
+     *                     @OA\Items(type="integer", example=1)
+     *                 ),
+     *                 @OA\Property(property="failed", type="array",
+     *                     @OA\Items(
+     *                         @OA\Property(property="id", type="integer", example=2),
+     *                         @OA\Property(property="reason", type="string", example="El vehículo P456 ya pertenece a una flota.")
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Datos inválidos",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="El campo vehicles es obligatorio."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Flota no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No query results for model [Fleet].")
+     *         )
+     *     )
+     * )
+     */
     public function store(AssignVehiclesToFleetRequest $request, Fleet $fleet): JsonResponse
     {
         $assigned = [];
@@ -56,6 +127,54 @@ class FleetVehicleController extends Controller
             ],
         ], 200);
     }
+
+     /**
+     * @OA\Delete(
+     *     path="/fleets/{fleet}/vehicles/{vehicle}",
+     *     summary="Desvincular un vehículo de una flota",
+     *     tags={"Flotas - Vehículos"},
+     *     @OA\Parameter(
+     *         name="fleet",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la flota",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="vehicle",
+     *         in="path",
+     *         required=true,
+     *         description="ID del vehículo",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Vehículo desvinculado exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="El vehículo P123456 fue desvinculado de la flota."),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="plate_number", type="string", example="P123456"),
+     *                 @OA\Property(property="fleet_id", type="integer", nullable=true, example=null)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="El vehículo no pertenece a esta flota o está en ruta",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="El vehículo P123456 no pertenece a esta flota.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Flota o vehículo no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No query results for model [Fleet].")
+     *         )
+     *     )
+     * )
+     */
 
     public function destroy(Fleet $fleet, Vehicle $vehicle): JsonResponse
     {
