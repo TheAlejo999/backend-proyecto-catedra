@@ -6,8 +6,9 @@ use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VehicleRouteController;
 use App\Http\Controllers\FleetVehicleController;
 use App\Http\Controllers\FleetController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\DriverController;
 use Illuminate\Support\Facades\Route;
+
 
 //Route::post('v1/login', [AuthController::class, 'login']);
 
@@ -57,8 +58,19 @@ Route::group(['prefix' => 'v1'], function () {
     Route::patch('/fleets/{fleet}', [FleetController::class, 'update']);
     Route::delete('/fleets/{fleet}', [FleetController::class, 'destroy']);
 
-    // Assign/Remove Vehicles to/from Fleet
+    // Aignar o desvincular vehículos a flota
     Route::post('/fleets/{fleet}/vehicles', [FleetVehicleController::class, 'store']);
     Route::delete('/fleets/{fleet}/vehicles/{vehicle}', [FleetVehicleController::class, 'destroy']);
+
+    // Drivers
+    Route::get('drivers', [DriverController::class, 'index']);
+    Route::post('drivers', [DriverController::class, 'store']);
+    Route::get('/drivers/{driver}', [DriverController::class, 'show']);
+    Route::patch('/drivers/{driver}', [DriverController::class, 'update']);
+    Route::delete('/drivers/{driver}', [DriverController::class, 'destroy']);
+
+    // Asignar o Desvincular Drivers
+    Route::post('/drivers/{driver}/assign', [DriverController::class, 'assign']);
+    Route::delete('/drivers/{driver}/assign', [DriverController::class, 'unassign']);
 });
 
