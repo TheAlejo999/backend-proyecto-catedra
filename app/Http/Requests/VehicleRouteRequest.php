@@ -25,7 +25,7 @@ class VehicleRouteRequest extends FormRequest
         return [
             'vehicle_id' => ['required', 'exists:vehicles,id'],
             'route_id'  => ['required', 'exists:routes,id'],
-            'load_weight' => ['required', 'numeric', 'min:0.01', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
+            'load_weight' => ['required', 'numeric', 'min:0.01', 'max:25000', 'regex:/^\d{1,5}(\.\d{1,2})?$/'],
             //'estimated_fuel' => ['nullable', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'], //esto lo calculara el controlador
             'departure_datetime' => ['required', 'date', 'after_or_equal:today'],
             //'estimated_arrival_datetime' => ['nullable','date', 'after_or_equal:today'], //esto lo calculara el controlador

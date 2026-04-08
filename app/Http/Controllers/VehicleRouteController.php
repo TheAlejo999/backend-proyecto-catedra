@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\VehicleRouteRequest;
 use App\Http\Resources\VehicleRouteResource;
+use App\Models\Route;
+use App\Models\Vehicle;
 use App\Models\VehicleRoute;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
@@ -38,9 +42,51 @@ class VehicleRouteController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(VehicleRouteRequest $request)
     {
-        //
+        $data = $request->validated();
+    
+        $vehicle = Vehicle::findOrFail($data['vehicle_id']);
+        $route   = Route::findOrFail($data['route_id']);
+    
+        // Validar que el vehículo esté disponible
+        if ($vehicle->status->value !== 'disponible') {
+            return response()->json([
+                'message' => 'El vehículo no está disponible.'
+            ], 422);
+        }
+    
+        // Validar que la carga no exceda la capacidad del vehículo
+        if ($data['load_weight'] > $vehicle->capacity_weight_kg) {
+            return response()->json([
+                'message' => 'La carga excede la capacidad del vehículo (' . $vehicle->capacity_weight_kg . ' kg).'
+            ], 422);
+        }
+    
+        // Factor k según tipo de vehículo
+        $kFactors = [
+            'sedan'  => 0.0001,
+            'pickup' => 0.0002,
+            'camion' => 0.0003,
+            'rastra' => 0.0004,
+        ];
+    
+        $k = $kFactors[$vehicle->type->value] ?? 0.0003;
+    
+        // Calcular estimated_fuel
+        $estimatedFuel = $vehicle->fuel_consumption_per_km * (1 + $k * $data['load_weight']);
+        $data['estimated_fuel'] = round($estimatedFuel * $route->distance_km, 2);
+    
+        // Calcular estimated_arrival_datetime 
+        $departure = Carbon::parse($data['departure_datetime']);
+        [$hours, $minutes] = explode(':', $route->estimated_time);
+        $totalMinutes = ($hours * 60) + $minutes;
+        $data['estimated_arrival_datetime'] = $departure->addMinutes($totalMinutes);
+    
+        $vehicleRoute = VehicleRoute::create($data);
+        $vehicleRoute->refresh();
+    
+        return response()->json(VehicleRouteResource::make($vehicleRoute), 201);
     }
 
     /**

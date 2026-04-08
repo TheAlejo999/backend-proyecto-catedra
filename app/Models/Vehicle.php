@@ -25,6 +25,7 @@ class Vehicle extends Model
         'capacity_weight_kg',
         'current_mileage',
         'fuel_percentage',
+        'tank_capacity_gallons',
         'fuel_consumption_per_km',
         'status',
     ];

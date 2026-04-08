@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('capacity_weight_kg', 10, 2);
             $table->decimal('current_mileage', 12, 2);
             $table->decimal('fuel_percentage', 5, 2);
+            $table->decimal('tank_capacity_gallons', 5, 2);
             $table->decimal('fuel_consumption_per_km', 8, 3);
             $table->enum('status', ['disponible', 'mantenimiento', 'en_ruta'])->default('disponible');
             $table->timestamps();

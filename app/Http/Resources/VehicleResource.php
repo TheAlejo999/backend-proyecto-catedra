@@ -26,6 +26,7 @@ class VehicleResource extends JsonResource
             'capacity_weight_kg' => $this->capacity_weight_kg,
             'current_mileage' => $this->current_mileage,
             'fuel_percentage' => $this->fuel_percentage,
+            'tank_capacity_gallons' => $this->tank_capacity_gallons,
             'fuel_consumption_per_km' => $this->fuel_consumption_per_km,
             'status' => $this->status
         ];

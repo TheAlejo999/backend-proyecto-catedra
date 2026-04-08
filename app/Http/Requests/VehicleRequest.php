@@ -30,9 +30,10 @@ class VehicleRequest extends FormRequest
             'brand' => ['required','string', 'max:50'],
             'year' => ['required','integer', 'digits:4', 'min:1980', 'max:' . date('Y')],
             'type' => ['required','string', 'in:pickup,camion,sedan,rastra'],
-            'capacity_weight_kg' => ['required', 'numeric', 'min:0.01', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
+            'capacity_weight_kg' => ['required', 'numeric', 'min:0.01', 'max:25000', 'regex:/^\d{1,5}(\.\d{1,2})?$/'],
             'current_mileage' => ['required', 'numeric', 'min:0.01', 'regex:/^\d{1,10}(\.\d{1,2})?$/'],
             'fuel_percentage' => ['required', 'numeric', 'min:0', 'max:100', 'regex:/^\d{1,3}(\.\d{1,2})?$/'],
+            'tank_capacity_gallons' => ['required', 'numeric', 'min:0.01', 'max:400', 'regex:/^\d{1,3}(\.\d{1,2})?$/'],
             'fuel_consumption_per_km'  => ['required', 'numeric', 'min:0.01', 'regex:/^\d{1,5}(\.\d{1,3})?$/'],
             'status' => ['required', 'in:disponible,mantenimiento,en_ruta']
         ];
