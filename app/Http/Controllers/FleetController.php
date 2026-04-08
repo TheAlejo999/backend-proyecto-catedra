@@ -7,7 +7,9 @@ use App\Http\Requests\StoreFleetRequest;
 use App\Http\Resources\FleetResource;
 use App\Http\Resources\FleetWithVehiclesResource;
 use App\Models\Fleet;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use App\Http\Requests\UpdateFleetRequest;
 
 class FleetController extends Controller
@@ -36,9 +38,15 @@ class FleetController extends Controller
      *     )
      * )
      */
-    public function index()
+    public function index(Request $request)
     {
-        $fleets = Fleet::withCount('vehicles')->get();
+        $fleets = Fleet::query();
+
+        if ($request->boolean('trashed')) {
+            $fleets = $fleets->onlyTrashed()->withCount('vehicles')->get();
+        } else {
+            $fleets = $fleets->withCount('vehicles')->get();
+        }
 
         return response()->json(['data' => FleetResource::collection($fleets),], 200);
     }
@@ -265,5 +273,20 @@ class FleetController extends Controller
         return response()->json([
             'message' => 'Flota eliminada exitosamente.',
         ], 200);
+    }
+
+    public function restore(int $fleet): JsonResponse
+    {
+        try {
+            Fleet::onlyTrashed()->findOrFail($fleet)->restore();
+
+            return response()->json([
+                'message' => 'Flota restaurada exitosamente.',
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'La flota ingresada no existe entre las eliminadas.',
+            ], 404);
+        }
     }
 }

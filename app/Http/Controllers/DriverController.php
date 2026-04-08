@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateDriverRequest;
 use App\Http\Resources\DriverResource;
 use App\Models\Driver;
 use App\Models\Vehicle;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class DriverController extends Controller
@@ -48,11 +49,17 @@ class DriverController extends Controller
      */
     public function index(Request $request)
     {
-        $drivers = Driver::with('user')
-            ->when($request->has('available'), function ($query) use ($request) {
-                $query->where('is_available', $request->boolean('available'));
-            })
-            ->get();
+        $drivers = Driver::query();
+
+        if ($request->boolean('trashed')) {
+            $drivers = $drivers->onlyTrashed()->with('user')->get();
+        } else {
+            $drivers = $drivers->with('user')
+                ->when($request->has('available'), function ($query) use ($request) {
+                    $query->where('is_available', $request->boolean('available'));
+                })
+                ->get();
+        }
 
         return response()->json(['data' => DriverResource::collection($drivers),], 200);
     }
@@ -254,6 +261,21 @@ class DriverController extends Controller
         return response()->json([
             'message' => 'Conductor eliminado exitosamente.',
         ], 200);
+    }
+
+    public function restore(int $driver)
+    {
+        try {
+            Driver::onlyTrashed()->findOrFail($driver)->restore();
+
+            return response()->json([
+                'message' => 'Conductor restaurado exitosamente.',
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'El conductor ingresado no existe entre los eliminados.',
+            ], 404);
+        }
     }
 
     /**

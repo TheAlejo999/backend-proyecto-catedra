@@ -57,6 +57,7 @@ Route::group(['prefix' => 'v1'], function () {
     Route::put('/fleets/{fleet}', [FleetController::class, 'update']);
     Route::patch('/fleets/{fleet}', [FleetController::class, 'update']);
     Route::delete('/fleets/{fleet}', [FleetController::class, 'destroy']);
+    Route::post('/fleets/{fleet}/restore', [FleetController::class, 'restore']);
 
     // Aignar o desvincular vehículos a flota
     Route::post('/fleets/{fleet}/vehicles', [FleetVehicleController::class, 'store']);
@@ -68,6 +69,7 @@ Route::group(['prefix' => 'v1'], function () {
     Route::get('/drivers/{driver}', [DriverController::class, 'show']);
     Route::patch('/drivers/{driver}', [DriverController::class, 'update']);
     Route::delete('/drivers/{driver}', [DriverController::class, 'destroy']);
+    Route::post('/drivers/{driver}/restore', [DriverController::class, 'restore']);
 
     // Asignar o Desvincular Drivers
     Route::post('/drivers/{driver}/assign', [DriverController::class, 'assign']);
