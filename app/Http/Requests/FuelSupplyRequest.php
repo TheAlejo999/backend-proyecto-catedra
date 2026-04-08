@@ -26,8 +26,10 @@ class FuelSupplyRequest extends FormRequest
             'vehicle_id' => ['required', 'exists:vehicles,id'],
             'route_id' => ['required', 'exists:routes,id'],
             'amount_gallons' => ['required', 'numeric', 'min:0.01', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
-            'total_cost' => ['required','numeric', 'min:0.01', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
-            'date' => ['required', 'date', 'before_or_equal:today']
+            'price_per_gallon' => ['nullable', 'numeric', 'min:0.01', 'regex:/^\d{1,3}(\.\d{1,2})?$/'],
+            'total_cost' => ['nullable','numeric', 'min:0.01', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
+            'date' => ['nullable', 'date', 'before_or_equal:today'],
+            'status' => ['nullable', 'in:pendiente'] 
         ];
     }
 }

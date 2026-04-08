@@ -19,8 +19,10 @@ class FuelSupplyResource extends JsonResource
             'vehicle' => VehicleResource::make($this->whenLoaded('vehicle')),
             'route'  => RouteResource::make($this->whenLoaded('vehicle')),
             'amount_gallons' => $this->amount_gallons,
+            'price_per_gallon' => $this->price_per_gallon,
             'total_cost'=> $this->total_cost,
-            'date' => $this->date
+            'date' => $this->date,
+            'status'  => $this->status
         ];
     }
 }

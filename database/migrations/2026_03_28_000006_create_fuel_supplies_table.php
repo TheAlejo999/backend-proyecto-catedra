@@ -13,8 +13,10 @@ return new class extends Migration
             $table->foreignId('vehicle_id')->constrained('vehicles')->onDelete('cascade');
             $table->foreignId('route_id')->constrained('routes')->onDelete('cascade');
             $table->decimal('amount_gallons', 8, 2);
-            $table->decimal('total_cost', 10, 2);
-            $table->date('date');
+            $table->decimal('price_per_gallon', 5, 2)->default('4.60');
+            $table->decimal('total_cost', 10, 2)->nullable();
+            $table->date('date')->nullable();
+            $table->enum('status', ['pendiente', 'completada'])->default('pendiente');
             $table->timestamps();
             $table->softDeletes();
         });

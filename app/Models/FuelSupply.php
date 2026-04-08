@@ -12,8 +12,10 @@ class FuelSupply extends Model
         'vehicle_id',
         'route_id',
         'amount_gallons',
+        'price_per_gallon',
         'total_cost',
-        'date'
+        'date',
+        'status'
     ];
 
     public function vehicle()

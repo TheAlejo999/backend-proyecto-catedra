@@ -7,9 +7,51 @@ use App\Http\Resources\RouteResource;
 use App\Models\Route;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class RouteController extends Controller
 {
+    private function calcularDistancia(string $origin, string $destination): array|null
+    {
+        $response = Http::get('https://maps.googleapis.com/maps/api/distancematrix/json', [
+            'origins' => $origin,
+            'destinations' => $destination,
+            'language' => 'es',
+            'units' => 'metric',
+            'key' => env('GOOGLE_MAPS_API_KEY'),
+        ]);
+
+        if (!$response->ok()) {
+            return null;
+        }
+
+        $data = $response->json();
+
+        // Verificar que la API devolvió resultados válidos
+        if (
+            $data['status'] !== 'OK' ||
+            $data['rows'][0]['elements'][0]['status'] !== 'OK'
+        ) {
+            return null;
+        }
+
+        $element = $data['rows'][0]['elements'][0];
+
+        // Convertir distancia de metros a km
+        $distanceKm = round($element['distance']['value'] / 1000, 2);
+
+        // Convertir segundos a formato HH:MM
+        $totalMinutes = intdiv($element['duration']['value'], 60);
+        $hours = intdiv($totalMinutes, 60);
+        $minutes = $totalMinutes % 60;
+        $estimatedTime = sprintf('%02d:%02d', $hours, $minutes);
+
+        return [
+            'distance_km' => $distanceKm,
+            'estimated_time' => $estimatedTime,
+        ];
+    }
+
     public function index(Request $request)
     {
         $route = Route::query();
@@ -51,6 +93,18 @@ class RouteController extends Controller
             ], 422);
         }
 
+        // Obtener distancia y tiempo estimado desde Google
+        $googleData = $this->calcularDistancia($data['origin'], $data['destination']);
+
+        if (!$googleData) {
+            return response()->json([
+                'message' => 'No se pudo obtener la información de la ruta desde Google Maps. Verifique el origen y destino.'
+            ], 422);
+        }
+
+        $data['distance_km'] = $googleData['distance_km'];
+        $data['estimated_time'] = $googleData['estimated_time'];
+
         $route = Route::create($data);
         $route->refresh();
 
@@ -84,6 +138,18 @@ class RouteController extends Controller
                 'message' => 'Ya existe una ruta con ese origen y destino'
             ], 422);
         }
+
+        // Obtener distancia y tiempo estimado desde Google
+        $googleData = $this->calcularDistancia($data['origin'], $data['destination']);
+
+        if (!$googleData) {
+            return response()->json([
+                'message' => 'No se pudo obtener la información de la ruta desde Google Maps. Verifique el origen y destino.'
+            ], 422);
+        }
+
+        $data['distance_km']    = $googleData['distance_km'];
+        $data['estimated_time'] = $googleData['estimated_time'];
 
         $updatedRoute->update($data);
 
