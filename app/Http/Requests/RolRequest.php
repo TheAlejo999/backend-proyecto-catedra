@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Rol;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -23,7 +24,14 @@ class RolRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:100']
+            'name' => ['required', 'string', 'max:100', 'unique:roles,name'] 
         ];
     }
+
+    public function messages(): array
+{
+    return [
+        'name.unique' => 'Ya existe ese rol.'
+    ];
+}
 }

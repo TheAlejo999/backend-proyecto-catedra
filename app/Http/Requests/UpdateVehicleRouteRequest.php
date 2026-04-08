@@ -25,7 +25,7 @@ class UpdateVehicleRouteRequest extends FormRequest
         return [
             'vehicle_id' => ['exists:vehicles,id'],
             'route_id'  => [ 'exists:routes,id'],
-            'load_weight' => ['numeric', 'min:0', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
+            'load_weight' => ['numeric', 'min:0.01', 'regex:/^\d{1,8}(\.\d{1,2})?$/'],
             'estimated_fuel' => ['numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'], 
             'departure_datetime' => [ 'date', 'after_or_equal:today'],
             'estimated_arrival_datetime' => ['date', 'after_or_equal:today'], 

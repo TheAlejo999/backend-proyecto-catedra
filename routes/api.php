@@ -18,6 +18,14 @@ Route::group(['prefix' => 'v1'], function () {
     // Route::post('logout', [AuthController::class, 'logout']);
     //  Route::get('profile', [AuthController::class, 'profile']);
 
+    // Roles
+    Route::get('roles', [VehicleController::class, 'index']);
+    Route::post('roles', [VehicleController::class, 'store']);
+    Route::get('/roles/{rol}', [VehicleController::class, 'show']);
+    Route::patch('/roles/{rol}', [VehicleController::class, 'update']);
+    Route::delete('/roles/{rol}', [VehicleController::class, 'destroy']);
+    Route::post('/roles/{rol}/restore', [VehicleController::class, 'restore']);
+
     // Vehicles
     Route::get('vehicles', [VehicleController::class, 'index']);
     Route::post('vehicles', [VehicleController::class, 'store']);

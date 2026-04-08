@@ -24,10 +24,10 @@ class UpdateRouteRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'origin' => ['string'],
-            'destination' => ['string'],
-            'distance_km' => ['numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
-            'estimated_time' => ['string'],
+            'origin' => ['string', 'max:200'],
+            'destination' => ['string', 'max:200'],
+            'distance_km' => ['numeric', 'min:0.01', 'regex:/^\d{1,6}(\.\d{1,2})?$/'],
+            'estimated_time' => ['string', 'regex:/^\d{2}:\d{2}(:\d{2})?$/'], //regex acepta formatos: h:i y h:i:s
         ];
     }
 }

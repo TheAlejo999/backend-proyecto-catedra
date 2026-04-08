@@ -33,15 +33,6 @@ class RolController extends Controller
     {
         $data = $request->validated();
 
-        //se verifica que no exista el rol que se esta intentando crear
-        $exists = Rol::where('name', $data['name'])->exists();
-
-        if ($exists) {
-            return response()->json([
-                'message' => 'Ya existe ese rol'
-            ], 422);
-        }
-
         $rol = Rol::create($data);
         $rol->refresh();
 
@@ -64,16 +55,6 @@ class RolController extends Controller
         $updatedRol = Rol::findOrFail($rol);
 
         $data = $request->validated();
-
-        //se verifica que no exista el rol que se esta intentando crear
-        $exists = Rol::where('name', $data['name'])->exists();
-
-        if ($exists) {
-            return response()->json([
-                'message' => 'Ya existe ese rol'
-            ], 422);
-        }
-
         $updatedRol->update($data);
 
         return response()->json(RolResource::make($updatedRol), 200);
