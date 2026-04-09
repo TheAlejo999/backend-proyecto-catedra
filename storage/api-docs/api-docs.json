@@ -15,6 +15,67 @@
         }
     ],
     "paths": {
+        "/api/v1/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Iniciar sesión",
+                "operationId": "da2ca4d7a5cdec77b8b45a20373535cb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "admin@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Token generado exitosamente"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    }
+                }
+            }
+        },
+        "/api/v1/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Cerrar sesión",
+                "operationId": "c4eddaf1a2e990cc90e4326c0d731d41",
+                "responses": {
+                    "200": {
+                        "description": "Cierre de sesión exitoso"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/drivers": {
             "get": {
                 "tags": [
@@ -1399,9 +1460,2268 @@
                     }
                 }
             }
+        },
+        "/fuel-supplies": {
+            "post": {
+                "tags": [
+                    "Abastecimiento de combustible"
+                ],
+                "summary": "Crear una orden de abastecimiento",
+                "operationId": "4a51a8de88437b38016d7709e1755c80",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "vehicle_id",
+                                    "route_id",
+                                    "amount_gallons"
+                                ],
+                                "properties": {
+                                    "vehicle_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "route_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "amount_gallons": {
+                                        "type": "number",
+                                        "example": 50.25
+                                    },
+                                    "price_per_gallon": {
+                                        "description": "Si no se envía, se usa 4.60 por defecto",
+                                        "type": "number",
+                                        "example": 4.6,
+                                        "nullable": true
+                                    },
+                                    "total_cost": {
+                                        "description": "Si no se envía, se calcula automáticamente",
+                                        "type": "number",
+                                        "example": 231.15,
+                                        "nullable": true
+                                    },
+                                    "date": {
+                                        "description": "Si no se envía, se usa la fecha actual",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-04-08",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Orden de abastecimiento creada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "vehicle_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "route_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "amount_gallons": {
+                                            "type": "number",
+                                            "example": 50.25
+                                        },
+                                        "price_per_gallon": {
+                                            "type": "number",
+                                            "example": 4.6
+                                        },
+                                        "total_cost": {
+                                            "type": "number",
+                                            "example": 231.15
+                                        },
+                                        "date": {
+                                            "type": "string",
+                                            "example": "2026-04-08"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "pendiente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "La ruta no está asignada al vehículo",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "La ruta seleccionada no está asignada a este vehículo."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/fuel-supplies/{fuelSupply}": {
+            "get": {
+                "tags": [
+                    "Abastecimiento de combustible"
+                ],
+                "summary": "Ver detalle de una orden de abastecimiento",
+                "operationId": "0c5369567987bcdc17bcbde0bc0fcf47",
+                "parameters": [
+                    {
+                        "name": "fuelSupply",
+                        "in": "path",
+                        "description": "ID de la orden de abastecimiento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalle de la orden obtenido exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "vehicle_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "route_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "amount_gallons": {
+                                            "type": "number",
+                                            "example": 50.25
+                                        },
+                                        "price_per_gallon": {
+                                            "type": "number",
+                                            "example": 4.6
+                                        },
+                                        "total_cost": {
+                                            "type": "number",
+                                            "example": 231.15
+                                        },
+                                        "date": {
+                                            "type": "string",
+                                            "example": "2026-04-08"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "pendiente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Orden no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [FuelSupply]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Abastecimiento de combustible"
+                ],
+                "summary": "Eliminar una orden de abastecimiento",
+                "operationId": "e7bc6ba5cefbd78fc13d148c46c7c5ff",
+                "parameters": [
+                    {
+                        "name": "fuelSupply",
+                        "in": "path",
+                        "description": "ID de la orden de abastecimiento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Orden eliminada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Abastecimiento de combustible eliminado correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Orden no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [FuelSupply]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Abastecimiento de combustible"
+                ],
+                "summary": "Actualizar una orden de abastecimiento",
+                "operationId": "849df7d999eeebb0cdaf5695ed392554",
+                "parameters": [
+                    {
+                        "name": "fuelSupply",
+                        "in": "path",
+                        "description": "ID de la orden de abastecimiento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "price_per_gallon": {
+                                        "description": "Si no se envía, se usa 4.60 por defecto",
+                                        "type": "number",
+                                        "example": 4.6,
+                                        "nullable": true
+                                    },
+                                    "total_cost": {
+                                        "description": "Si no se envía, se calcula automáticamente",
+                                        "type": "number",
+                                        "example": 231.15,
+                                        "nullable": true
+                                    },
+                                    "date": {
+                                        "description": "Si no se envía, se usa la fecha actual",
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-04-08",
+                                        "nullable": true
+                                    },
+                                    "status": {
+                                        "description": "Al marcar como completado, se actualiza el combustible del vehículo y se aprueba la ruta pendiente",
+                                        "type": "string",
+                                        "enum": [
+                                            "completado"
+                                        ],
+                                        "example": "completado",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Orden actualizada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "vehicle_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "route_id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "amount_gallons": {
+                                            "type": "number",
+                                            "example": 50.25
+                                        },
+                                        "price_per_gallon": {
+                                            "type": "number",
+                                            "example": 4.6
+                                        },
+                                        "total_cost": {
+                                            "type": "number",
+                                            "example": 231.15
+                                        },
+                                        "date": {
+                                            "type": "string",
+                                            "example": "2026-04-08"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "completado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "La orden ya fue completada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Esta orden de abastecimiento ya fue completada y no puede editarse."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Orden no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [FuelSupply]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/fuel-supplies/{fuelSupply}/restore": {
+            "post": {
+                "tags": [
+                    "Abastecimiento de combustible"
+                ],
+                "summary": "Restaurar una orden de abastecimiento eliminada",
+                "operationId": "575498a69ea9bc636c7786734ec2203e",
+                "parameters": [
+                    {
+                        "name": "fuelSupply",
+                        "in": "path",
+                        "description": "ID de la orden de abastecimiento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Orden restaurada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Abastecimiento de combustible restaurado correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Orden no encontrada entre los eliminados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El abastecimiento de combustible ingresado no existe entre los eliminados"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/roles": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Listar todos los roles",
+                "operationId": "3c1259bc9c569b5e1c655d1b9d69bbf4",
+                "parameters": [
+                    {
+                        "name": "trashed",
+                        "in": "query",
+                        "description": "Mostrar roles eliminados",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Filtrar por nombre del rol",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Admin"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de roles obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Admin"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Crear un nuevo rol",
+                "operationId": "8a6386848c492438aa57189c627ca341",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Admin"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Rol creado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Admin"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Datos inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ya existe ese rol."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Ya existe ese rol."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/roles/{rol}": {
+            "get": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Ver detalle de un rol",
+                "operationId": "00f8f9206559a04bea6f861be20738b9",
+                "parameters": [
+                    {
+                        "name": "rol",
+                        "in": "path",
+                        "description": "ID del rol",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalle del rol obtenido exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Admin"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Rol no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [Role]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Eliminar un rol",
+                "operationId": "503c3ef7b8f3c7dea91c128f4c175943",
+                "parameters": [
+                    {
+                        "name": "rol",
+                        "in": "path",
+                        "description": "ID del rol",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rol eliminado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Rol eliminado correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Rol no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [Role]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Actualizar un rol",
+                "operationId": "6231d79f8e19f93e6178c1c999271d51",
+                "parameters": [
+                    {
+                        "name": "rol",
+                        "in": "path",
+                        "description": "ID del rol",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "maxLength": 100,
+                                        "example": "Supervisor"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rol actualizado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Supervisor"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Datos inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ya existe ese rol."
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "name": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "Ya existe ese rol."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Rol no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [Role]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/roles/{rol}/restore": {
+            "post": {
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Restaurar un rol eliminado",
+                "operationId": "312c6cad5912c9dea0f3cd57d6c9dcbe",
+                "parameters": [
+                    {
+                        "name": "rol",
+                        "in": "path",
+                        "description": "ID del rol",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rol restaurado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ruta restaurada correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Rol no encontrado entre los eliminados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El rol ingresado no existe entre los eliminados"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/routes": {
+            "get": {
+                "tags": [
+                    "Rutas"
+                ],
+                "summary": "Listar rutas",
+                "description": "Retorna una lista paginada de rutas activas (16 por página). Si se pasa `trashed=true`, retorna las rutas eliminadas (soft delete) sin paginar.",
+                "operationId": "c926a8da66ee59a7be4f32bd74deb95d",
+                "parameters": [
+                    {
+                        "name": "trashed",
+                        "in": "query",
+                        "description": "Si es true, retorna únicamente las rutas eliminadas.",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": false
+                        }
+                    },
+                    {
+                        "name": "origin",
+                        "in": "query",
+                        "description": "Filtrar por origen (LIKE desde el inicio).",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "San Salvador"
+                        }
+                    },
+                    {
+                        "name": "destination",
+                        "in": "query",
+                        "description": "Filtrar por destino (LIKE desde el inicio).",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Santa Ana"
+                        }
+                    },
+                    {
+                        "name": "distance_km",
+                        "in": "query",
+                        "description": "Filtrar por distancia en km.",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "65"
+                        }
+                    },
+                    {
+                        "name": "estimated_time",
+                        "in": "query",
+                        "description": "Filtrar por tiempo estimado (formato HH:MM).",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "01:30"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de rutas obtenida exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "origin": {
+                                                        "type": "string",
+                                                        "example": "San Salvador"
+                                                    },
+                                                    "destination": {
+                                                        "type": "string",
+                                                        "example": "Santa Ana"
+                                                    },
+                                                    "distance_km": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 65.4
+                                                    },
+                                                    "estimated_time": {
+                                                        "type": "string",
+                                                        "example": "01:10"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "per_page": {
+                                            "type": "integer",
+                                            "example": 16
+                                        },
+                                        "total": {
+                                            "type": "integer",
+                                            "example": 50
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Rutas"
+                ],
+                "summary": "Crear una nueva ruta",
+                "description": "Crea una ruta con origen y destino. La distancia y el tiempo estimado se calculan automáticamente mediante OpenRouteService. No se permiten rutas duplicadas con el mismo origen y destino.",
+                "operationId": "83d8e8e4eebdc7f5e2bc5479cf0bd8b9",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "origin",
+                                    "destination"
+                                ],
+                                "properties": {
+                                    "origin": {
+                                        "description": "Lugar de origen de la ruta.",
+                                        "type": "string",
+                                        "maxLength": 200,
+                                        "example": "San Salvador"
+                                    },
+                                    "destination": {
+                                        "description": "Lugar de destino de la ruta.",
+                                        "type": "string",
+                                        "maxLength": 200,
+                                        "example": "Santa Ana"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ruta creada exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "origin": {
+                                            "type": "string",
+                                            "example": "San Salvador"
+                                        },
+                                        "destination": {
+                                            "type": "string",
+                                            "example": "Santa Ana"
+                                        },
+                                        "distance_km": {
+                                            "description": "Calculado automáticamente por OpenRouteService.",
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 65.4
+                                        },
+                                        "estimated_time": {
+                                            "description": "Calculado automáticamente por OpenRouteService.",
+                                            "type": "string",
+                                            "example": "01:10"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Datos inválidos, ruta duplicada o fallo al obtener datos de la API externa.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ya existe una ruta con ese origen y destino"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "origin": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The origin field is required."
+                                                    }
+                                                },
+                                                "destination": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The destination field is required."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/routes/{route}": {
+            "get": {
+                "tags": [
+                    "Rutas"
+                ],
+                "summary": "Obtener una ruta por ID",
+                "description": "Retorna los detalles de una ruta específica.",
+                "operationId": "39f7abbe3b7f4432625dae08bfab6a09",
+                "parameters": [
+                    {
+                        "name": "route",
+                        "in": "path",
+                        "description": "ID de la ruta.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ruta encontrada.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "origin": {
+                                            "type": "string",
+                                            "example": "San Salvador"
+                                        },
+                                        "destination": {
+                                            "type": "string",
+                                            "example": "Santa Ana"
+                                        },
+                                        "distance_km": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 65.4
+                                        },
+                                        "estimated_time": {
+                                            "type": "string",
+                                            "example": "01:10"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ruta no encontrada.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Route]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Rutas"
+                ],
+                "summary": "Eliminar una ruta (soft delete)",
+                "description": "Realiza un soft delete de la ruta. La ruta puede ser restaurada posteriormente con el endpoint de restauración.",
+                "operationId": "b7e9c2790e0f58ece22a09522f6d63f6",
+                "parameters": [
+                    {
+                        "name": "route",
+                        "in": "path",
+                        "description": "ID de la ruta.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ruta eliminada correctamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ruta eliminada correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ruta no encontrada.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Route]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Rutas"
+                ],
+                "summary": "Actualizar una ruta",
+                "description": "Actualiza los campos de una ruta existente. Si se modifican origin o destination, la distancia y el tiempo estimado se recalculan automáticamente vía OpenRouteService, a menos que se provean explícitamente en el cuerpo.",
+                "operationId": "da14ad632ce1a60152373ccd46288dc6",
+                "parameters": [
+                    {
+                        "name": "route",
+                        "in": "path",
+                        "description": "ID de la ruta.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "origin": {
+                                        "description": "Lugar de origen.",
+                                        "type": "string",
+                                        "maxLength": 200,
+                                        "example": "San Salvador"
+                                    },
+                                    "destination": {
+                                        "description": "Lugar de destino.",
+                                        "type": "string",
+                                        "maxLength": 200,
+                                        "example": "Sonsonate"
+                                    },
+                                    "distance_km": {
+                                        "description": "Opcional. Si se omite, se calcula automáticamente. Formato: hasta 6 dígitos enteros y 2 decimales.",
+                                        "type": "number",
+                                        "format": "float",
+                                        "minimum": 0.01,
+                                        "example": 74.2
+                                    },
+                                    "estimated_time": {
+                                        "description": "Opcional. Si se omite, se calcula automáticamente. Formatos aceptados: HH:MM o HH:MM:SS.",
+                                        "type": "string",
+                                        "example": "01:20"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ruta actualizada exitosamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "origin": {
+                                            "type": "string",
+                                            "example": "San Salvador"
+                                        },
+                                        "destination": {
+                                            "type": "string",
+                                            "example": "Sonsonate"
+                                        },
+                                        "distance_km": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 74.2
+                                        },
+                                        "estimated_time": {
+                                            "type": "string",
+                                            "example": "01:20"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Ruta no encontrada.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [App\\\\Models\\\\Route]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Datos inválidos, ruta duplicada o fallo en API externa.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ya existe una ruta con ese origen y destino"
+                                        },
+                                        "errors": {
+                                            "properties": {
+                                                "distance_km": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The distance km field must be a number."
+                                                    }
+                                                },
+                                                "estimated_time": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "The estimated time field format is invalid."
+                                                    }
+                                                }
+                                            },
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/routes/{route}/restore": {
+            "post": {
+                "tags": [
+                    "Rutas"
+                ],
+                "summary": "Restaurar una ruta eliminada",
+                "description": "Restaura una ruta que fue eliminada mediante soft delete.",
+                "operationId": "d0d16d28cd1487d749ddc5ab583d1540",
+                "parameters": [
+                    {
+                        "name": "route",
+                        "in": "path",
+                        "description": "ID de la ruta eliminada.",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ruta restaurada correctamente.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ruta restaurada correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "La ruta no existe entre los registros eliminados.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "La ruta ingresado no existe entre los eliminados"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/vehicles/{vehicle}": {
+            "delete": {
+                "tags": [
+                    "Vehículos"
+                ],
+                "summary": "Eliminar un vehículo",
+                "operationId": "c1f21350f0d6fd28cbc9b64fb7707b57",
+                "parameters": [
+                    {
+                        "name": "vehicle",
+                        "in": "path",
+                        "description": "ID del vehículo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vehículo eliminado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Vehiculo eliminado correctamente"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Vehículo no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [Vehicle]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Vehículos"
+                ],
+                "summary": "Actualizar un vehículo",
+                "operationId": "434da126c3f32919690e6be8a899cdb4",
+                "parameters": [
+                    {
+                        "name": "vehicle",
+                        "in": "path",
+                        "description": "ID del vehículo",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "fleet_id": {
+                                        "description": "Debe existir en la BD",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "driver_id": {
+                                        "description": "Debe existir en la BD",
+                                        "type": "integer",
+                                        "example": 1,
+                                        "nullable": true
+                                    },
+                                    "plate_number": {
+                                        "description": "Solo letras mayúsculas, números, guiones y espacios",
+                                        "type": "string",
+                                        "maxLength": 25,
+                                        "example": "P123456"
+                                    },
+                                    "model": {
+                                        "type": "string",
+                                        "example": "Actros"
+                                    },
+                                    "brand": {
+                                        "type": "string",
+                                        "maxLength": 50,
+                                        "example": "Mercedes"
+                                    },
+                                    "year": {
+                                        "description": "Entre 1980 y el año actual",
+                                        "type": "integer",
+                                        "example": 2020
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pickup",
+                                            "camion",
+                                            "sedan",
+                                            "rastra"
+                                        ],
+                                        "example": "camion"
+                                    },
+                                    "capacity_weight_kg": {
+                                        "description": "Entre 0.01 y 25000 kg",
+                                        "type": "number",
+                                        "example": 5000
+                                    },
+                                    "current_mileage": {
+                                        "description": "Mínimo 0.01",
+                                        "type": "number",
+                                        "example": 50000
+                                    },
+                                    "fuel_percentage": {
+                                        "description": "Entre 0 y 100",
+                                        "type": "number",
+                                        "example": 60
+                                    },
+                                    "tank_capacity_gallons": {
+                                        "description": "Entre 0.01 y 400 galones",
+                                        "type": "number",
+                                        "example": 150
+                                    },
+                                    "fuel_consumption_per_km": {
+                                        "description": "Mínimo 0.01",
+                                        "type": "number",
+                                        "example": 0.35
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "disponible",
+                                            "mantenimiento",
+                                            "en_ruta"
+                                        ],
+                                        "example": "disponible"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vehículo actualizado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "fleet_id": {
+                                            "type": "integer",
+                                            "example": 1,
+                                            "nullable": true
+                                        },
+                                        "driver_id": {
+                                            "type": "integer",
+                                            "example": 1,
+                                            "nullable": true
+                                        },
+                                        "plate_number": {
+                                            "type": "string",
+                                            "example": "P123456"
+                                        },
+                                        "model": {
+                                            "type": "string",
+                                            "example": "Actros"
+                                        },
+                                        "brand": {
+                                            "type": "string",
+                                            "example": "Mercedes"
+                                        },
+                                        "year": {
+                                            "type": "integer",
+                                            "example": 2020
+                                        },
+                                        "type": {
+                                            "type": "string",
+                                            "example": "camion"
+                                        },
+                                        "capacity_weight_kg": {
+                                            "type": "number",
+                                            "example": 5000
+                                        },
+                                        "current_mileage": {
+                                            "type": "number",
+                                            "example": 50000
+                                        },
+                                        "fuel_percentage": {
+                                            "type": "number",
+                                            "example": 60
+                                        },
+                                        "tank_capacity_gallons": {
+                                            "type": "number",
+                                            "example": 150
+                                        },
+                                        "fuel_consumption_per_km": {
+                                            "type": "number",
+                                            "example": 0.35
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "disponible"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Vehículo no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [Vehicle]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/vehicle-route": {
+            "get": {
+                "tags": [
+                    "Asignación de rutas"
+                ],
+                "summary": "Listar todas las asignaciones de ruta",
+                "operationId": "2903bb24b1764b8af742b3ca4c5b33c7",
+                "parameters": [
+                    {
+                        "name": "trashed",
+                        "in": "query",
+                        "description": "Mostrar asignaciones eliminadas",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "example": true
+                        }
+                    },
+                    {
+                        "name": "vehicle",
+                        "in": "query",
+                        "description": "Filtrar por ID de vehículo",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "route",
+                        "in": "query",
+                        "description": "Filtrar por ID de ruta",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filtrar por estado",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "pendiente",
+                                "aprobada",
+                                "en_progreso",
+                                "finalizada",
+                                "cancelada"
+                            ],
+                            "example": "aprobada"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de asignaciones obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "vehicle_id": {
+                                                        "description": "Datos del vehículo",
+                                                        "type": "object"
+                                                    },
+                                                    "route_id": {
+                                                        "description": "Datos de la ruta",
+                                                        "type": "object"
+                                                    },
+                                                    "load_weight": {
+                                                        "type": "number",
+                                                        "example": 1200
+                                                    },
+                                                    "estimated_fuel": {
+                                                        "type": "number",
+                                                        "example": 82.13
+                                                    },
+                                                    "departure_datetime": {
+                                                        "type": "string",
+                                                        "example": "2026-04-19 12:00:00"
+                                                    },
+                                                    "estimated_arrival_datetime": {
+                                                        "type": "string",
+                                                        "example": "2026-04-19 14:00:00"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "aprobada"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Asignación de rutas"
+                ],
+                "summary": "Asignar una ruta a un vehículo",
+                "operationId": "fb487259788556b9bbc5a0d82db0d9b7",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "vehicle_id",
+                                    "route_id",
+                                    "load_weight",
+                                    "departure_datetime",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "vehicle_id": {
+                                        "description": "Debe existir en la BD y estar en estado disponible",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "route_id": {
+                                        "description": "Debe existir en la BD",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "load_weight": {
+                                        "description": "Entre 0.01 y 25000 kg, no puede exceder la capacidad del vehículo",
+                                        "type": "number",
+                                        "example": 1200
+                                    },
+                                    "departure_datetime": {
+                                        "description": "Debe ser igual o posterior a hoy",
+                                        "type": "string",
+                                        "example": "2026-04-19 12:00:00"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pendiente",
+                                            "aprobada",
+                                            "en_progreso",
+                                            "finalizada",
+                                            "cancelada"
+                                        ],
+                                        "example": "aprobada"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ruta asignada exitosamente con combustible suficiente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "vehicle_id": {
+                                            "description": "Datos del vehículo",
+                                            "type": "object"
+                                        },
+                                        "route_id": {
+                                            "description": "Datos de la ruta",
+                                            "type": "object"
+                                        },
+                                        "load_weight": {
+                                            "type": "number",
+                                            "example": 1200
+                                        },
+                                        "estimated_fuel": {
+                                            "description": "Calculado automáticamente",
+                                            "type": "number",
+                                            "example": 82.13
+                                        },
+                                        "departure_datetime": {
+                                            "type": "string",
+                                            "example": "2026-04-19 12:00:00"
+                                        },
+                                        "estimated_arrival_datetime": {
+                                            "description": "Calculado automáticamente",
+                                            "type": "string",
+                                            "example": "2026-04-19 14:00:00"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "aprobada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Datos inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "El vehículo no está disponible."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/vehicle-route/{vehicleroute}": {
+            "get": {
+                "tags": [
+                    "Asignación de rutas"
+                ],
+                "summary": "Ver detalle de una asignación de ruta",
+                "operationId": "1d52dd2d00fb51586ae672a9927da0ec",
+                "parameters": [
+                    {
+                        "name": "vehicleroute",
+                        "in": "path",
+                        "description": "ID de la asignación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalle de la asignación obtenido exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "vehicle_id": {
+                                            "description": "Datos del vehículo",
+                                            "type": "object"
+                                        },
+                                        "route_id": {
+                                            "description": "Datos de la ruta",
+                                            "type": "object"
+                                        },
+                                        "load_weight": {
+                                            "type": "number",
+                                            "example": 1200
+                                        },
+                                        "estimated_fuel": {
+                                            "type": "number",
+                                            "example": 82.13
+                                        },
+                                        "departure_datetime": {
+                                            "type": "string",
+                                            "example": "2026-04-19 12:00:00"
+                                        },
+                                        "estimated_arrival_datetime": {
+                                            "type": "string",
+                                            "example": "2026-04-19 14:00:00"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "aprobada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Asignación no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [VehicleRoute]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Asignación de rutas"
+                ],
+                "summary": "Eliminar una asignación de ruta",
+                "operationId": "76c63452c3b559d39e54fc99631dfe38",
+                "parameters": [
+                    {
+                        "name": "vehicleroute",
+                        "in": "path",
+                        "description": "ID de la asignación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Asignación eliminada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ruta de vehículo eliminada correctamente."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Solo se pueden eliminar rutas en estado pendiente o aprobada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Solo se pueden eliminar rutas en estado pendiente o aprobada."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Asignación no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [VehicleRoute]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Asignación de rutas"
+                ],
+                "summary": "Actualizar una asignación de ruta",
+                "operationId": "e9a3a7988ab4864b9a9ccc0eb706b20d",
+                "parameters": [
+                    {
+                        "name": "vehicleroute",
+                        "in": "path",
+                        "description": "ID de la asignación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "vehicle_id": {
+                                        "description": "Debe existir en la BD",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "route_id": {
+                                        "description": "Debe existir en la BD",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "load_weight": {
+                                        "description": "Entre 0.01 y 25000 kg",
+                                        "type": "number",
+                                        "example": 1200
+                                    },
+                                    "departure_datetime": {
+                                        "description": "Debe ser igual o posterior a hoy",
+                                        "type": "string",
+                                        "example": "2026-04-19 12:00:00"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pendiente",
+                                            "aprobada",
+                                            "en_progreso",
+                                            "finalizada",
+                                            "cancelada"
+                                        ],
+                                        "example": "pendiente"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Asignación actualizada exitosamente con combustible suficiente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "vehicle_id": {
+                                            "description": "Datos del vehículo",
+                                            "type": "object"
+                                        },
+                                        "route_id": {
+                                            "description": "Datos de la ruta",
+                                            "type": "object"
+                                        },
+                                        "load_weight": {
+                                            "type": "number",
+                                            "example": 1200
+                                        },
+                                        "estimated_fuel": {
+                                            "type": "number",
+                                            "example": 82.13
+                                        },
+                                        "departure_datetime": {
+                                            "type": "string",
+                                            "example": "2026-04-19 12:00:00"
+                                        },
+                                        "estimated_arrival_datetime": {
+                                            "type": "string",
+                                            "example": "2026-04-19 14:00:00"
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "aprobada"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Solo se pueden actualizar rutas en estado pendiente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Solo se pueden actualizar rutas en estado pendiente."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Asignación no encontrada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [VehicleRoute]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/vehicle-route/{vehicleroute}/restore": {
+            "post": {
+                "tags": [
+                    "Asignación de rutas"
+                ],
+                "summary": "Restaurar una asignación de ruta eliminada",
+                "operationId": "c2f57ebed8b3aa8649c6d407dc263a64",
+                "parameters": [
+                    {
+                        "name": "vehicleroute",
+                        "in": "path",
+                        "description": "ID de la asignación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Asignación restaurada exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ruta de vehículo restaurada correctamente."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "El vehículo ya no está disponible",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No se puede restaurar la ruta porque el vehículo ya no está disponible."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Asignación no encontrada entre los eliminados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "La ruta de vehículo ingresada no existe entre los eliminados."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        },
         {
             "name": "Conductores",
             "description": "Conductores"
@@ -1413,6 +3733,26 @@
         {
             "name": "Flotas - Vehículos",
             "description": "Flotas - Vehículos"
+        },
+        {
+            "name": "Abastecimiento de combustible",
+            "description": "Abastecimiento de combustible"
+        },
+        {
+            "name": "Roles",
+            "description": "Roles"
+        },
+        {
+            "name": "Rutas",
+            "description": "Rutas"
+        },
+        {
+            "name": "Vehículos",
+            "description": "Vehículos"
+        },
+        {
+            "name": "Asignación de rutas",
+            "description": "Asignación de rutas"
         }
     ]
 }

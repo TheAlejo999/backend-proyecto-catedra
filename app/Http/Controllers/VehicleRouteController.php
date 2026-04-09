@@ -121,17 +121,6 @@ class VehicleRouteController extends Controller
      *         )
      *     ),
      *     @OA\Response(
-     *         response=201,
-     *         description="Combustible insuficiente, se generó orden de abastecimiento",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Combustible insuficiente, se generó una orden de abastecimiento."),
-     *             @OA\Property(property="required_fuel", type="number", example=82.13),
-     *             @OA\Property(property="current_fuel", type="number", example=50.00),
-     *             @OA\Property(property="missing_fuel", type="number", example=32.13),
-     *             @OA\Property(property="vehicle_route", type="object", description="Datos de la asignación en estado pendiente")
-     *         )
-     *     ),
-     *     @OA\Response(
      *         response=422,
      *         description="Datos inválidos",
      *         @OA\JsonContent(
@@ -263,17 +252,6 @@ class VehicleRouteController extends Controller
      *             @OA\Property(property="departure_datetime", type="string", example="2026-04-19 12:00:00"),
      *             @OA\Property(property="estimated_arrival_datetime", type="string", example="2026-04-19 14:00:00"),
      *             @OA\Property(property="status", type="string", example="aprobada")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=200,
-     *         description="Combustible insuficiente, se actualizó orden de abastecimiento",
-     *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="Combustible insuficiente, se actualizó la orden de abastecimiento."),
-     *             @OA\Property(property="required_fuel", type="number", example=82.13),
-     *             @OA\Property(property="current_fuel", type="number", example=50.00),
-     *             @OA\Property(property="missing_fuel", type="number", example=32.13),
-     *             @OA\Property(property="vehicle_route", type="object", description="Datos de la asignación")
      *         )
      *     ),
      *     @OA\Response(
