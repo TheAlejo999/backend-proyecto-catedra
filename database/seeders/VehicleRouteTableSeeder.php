@@ -9,7 +9,7 @@ class VehicleRouteTableSeeder extends Seeder
 {
     public function run()
     {
-        DB::table('vehicle_route')->insert([
+        DB::table('vehicle_routes')->insert([
             [
                 'vehicle_id' => 1,
                 'route_id' => 1,
