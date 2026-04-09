@@ -16,7 +16,7 @@ class FleetResource extends JsonResource
             'type_label' => $this->type->label(),
             'description' => $this->description,
             'vehicles_count' => $this->whenCounted('vehicles'),
-            'created_at' => $this->created_at->toDateTimeString(),
+            'created_at' => $this->created_at?->toDateTimeString(),
         ];
     }
 }

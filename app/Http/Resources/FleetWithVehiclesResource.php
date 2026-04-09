@@ -16,7 +16,7 @@ class FleetWithVehiclesResource extends JsonResource
             'type_label' => $this->type->label(),
             'description' => $this->description,
             'vehicles' => VehicleResource::collection($this->whenLoaded('vehicles')),
-            'created_at' => $this->created_at->toDateTimeString(),
+            'created_at' => $this->created_at?->toDateTimeString(),
         ];
     }
 }
