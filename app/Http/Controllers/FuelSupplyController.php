@@ -86,7 +86,8 @@ class FuelSupplyController extends Controller
         $fuelSupplies = $query
             ->when($request->has('vehicle'), fn($q) => $q->where('vehicle_id', $request->input('vehicle')))
             ->when($request->has('date'), fn($q) => $q->where('date', $request->input('date')))
-            ->paginate(16);
+            ->when($request->has('route'), fn($q) => $q->where('route_id', $request->input('route')))
+            ->get();
 
         return response()->json(FuelSupplyResource::collection($fuelSupplies), 200);
     }
