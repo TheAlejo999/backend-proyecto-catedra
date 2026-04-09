@@ -44,22 +44,23 @@ class UserFactory extends Factory
 
     public function admin(): static
     {
-        return $this->state(fn(array $attributes) => [
-            'role_id' => $this->resolveRoleId('Administrador'),
-        ]);
+        return $this->role('Administrador');
     }
 
     public function logistica(): static
     {
-        return $this->state(fn(array $attributes) => [
-            'role_id' => $this->resolveRoleId('Logística'),
-        ]);
+        return $this->role('Logística');
     }
 
     public function conductor(): static
     {
+        return $this->role('Conductor');
+    }
+
+    public function role(string $roleName): static
+    {
         return $this->state(fn(array $attributes) => [
-            'role_id' => $this->resolveRoleId('Conductor'),
+            'role_id' => $this->resolveRoleId($roleName),
         ]);
     }
 

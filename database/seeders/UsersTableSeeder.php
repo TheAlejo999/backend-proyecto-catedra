@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -36,5 +37,10 @@ class UsersTableSeeder extends Seeder
                 'hiring_date' => now(),
             ],
         ]);
+
+        // Usuarios adicionales para pruebas por rol.
+        User::factory()->admin()->count(5)->create();
+        User::factory()->logistica()->count(5)->create();
+        User::factory()->conductor()->count(5)->create();
     }
 }
