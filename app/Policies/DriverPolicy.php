@@ -42,4 +42,14 @@ class DriverPolicy
     { 
         return $user->role->name === 'Administrador'; 
     }
+
+    public function assign(User $user, Driver $driver): bool
+    {
+        return $user->role->name === 'Administrador';
+    }
+
+    public function unassign(User $user, Driver $driver): bool
+    {
+        return $user->role->name === 'Administrador';
+    }
 }

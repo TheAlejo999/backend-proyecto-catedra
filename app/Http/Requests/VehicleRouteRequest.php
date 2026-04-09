@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class VehicleRouteRequest extends FormRequest
@@ -18,7 +17,7 @@ class VehicleRouteRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+    * @return array<string, array<mixed>|string>
      */
     public function rules(): array
     {
@@ -29,7 +28,7 @@ class VehicleRouteRequest extends FormRequest
             //'estimated_fuel' => ['nullable', 'numeric', 'min:0', 'regex:/^\d{1,6}(\.\d{1,2})?$/'], //esto lo calculara el controlador
             'departure_datetime' => ['required', 'date', 'after_or_equal:today'],
             //'estimated_arrival_datetime' => ['nullable','date', 'after_or_equal:today'], //esto lo calculara el controlador
-            'status' => ['required', 'string', 'in:pendiente,aprobada,en_progreso,finalizada,cancelada'],
+            'status' => ['nullable', 'string', 'in:pendiente,aprobada,en_progreso,finalizada,cancelada'],
         ];
     }
 }

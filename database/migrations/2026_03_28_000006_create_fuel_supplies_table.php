@@ -16,7 +16,7 @@ return new class extends Migration
             $table->decimal('price_per_gallon', 5, 2)->default('4.60');
             $table->decimal('total_cost', 10, 2)->nullable();
             $table->date('date')->nullable();
-            $table->enum('status', ['pendiente', 'completada'])->default('pendiente');
+            $table->enum('status', ['pendiente', 'completado'])->default('pendiente');
             $table->timestamps();
             $table->softDeletes();
         });

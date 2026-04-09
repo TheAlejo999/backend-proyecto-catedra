@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\VehicleType;
+use App\Http\Requests\UpdateVehicleRouteRequest;
 use App\Http\Requests\VehicleRouteRequest;
 use App\Http\Resources\VehicleRouteResource;
 use App\Models\FuelSupply;
@@ -89,20 +91,29 @@ class VehicleRouteController extends Controller
         return response()->json(VehicleRouteResource::make($vehicle_route), 200);
     }
 
-    public function update(VehicleRouteRequest $request, VehicleRoute $vehicle_route)
+    public function update(UpdateVehicleRouteRequest $request, VehicleRoute $vehicle_route)
     {
         if ($vehicle_route->status !== 'pendiente') {
             return response()->json(['message' => 'Solo se pueden actualizar rutas en estado pendiente.'], 422);
         }
 
         $data = $request->validated();
-        $vehicle = Vehicle::findOrFail($data['vehicle_id']);
-        $route   = Route::findOrFail($data['route_id']);
+        $vehicleId = $data['vehicle_id'] ?? $vehicle_route->vehicle_id;
+        $routeId = $data['route_id'] ?? $vehicle_route->route_id;
+        $loadWeight = $data['load_weight'] ?? $vehicle_route->load_weight;
+        $departureDatetime = $data['departure_datetime'] ?? $vehicle_route->departure_datetime;
+
+        $vehicle = Vehicle::findOrFail($vehicleId);
+        $route = Route::findOrFail($routeId);
 
         $k = $this->getKFactor($vehicle);
-        $data['estimated_fuel'] = round($vehicle->fuel_consumption_per_km * (1 + $k * $data['load_weight']) * $route->distance_km, 2);
+        $data['vehicle_id'] = $vehicleId;
+        $data['route_id'] = $routeId;
+        $data['load_weight'] = $loadWeight;
+        $data['departure_datetime'] = $departureDatetime;
+        $data['estimated_fuel'] = round($vehicle->fuel_consumption_per_km * (1 + $k * $loadWeight) * $route->distance_km, 2);
 
-        $departure = Carbon::parse($data['departure_datetime']);
+        $departure = Carbon::parse($departureDatetime);
         [$hours, $minutes] = explode(':', $route->estimated_time);
         $data['estimated_arrival_datetime'] = $departure->addMinutes(($hours * 60) + $minutes);
 
@@ -141,6 +152,33 @@ class VehicleRouteController extends Controller
 
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'La ruta no existe entre los eliminados.'], 404);
+        }
+    }
+
+    private function getKFactor(Vehicle $vehicle): float
+    {
+        return match ($vehicle->type) {
+            VehicleType::Sedan => 0.0002,
+            VehicleType::Pickup => 0.0004,
+            VehicleType::Camion => 0.0006,
+            VehicleType::Rastra => 0.0008,
+            default => 0.0005,
+        };
+    }
+
+    private function syncStatus(VehicleRoute $vehicleRoute): void
+    {
+        $now = Carbon::now();
+        $departure = Carbon::parse($vehicleRoute->departure_datetime);
+        $arrival = Carbon::parse($vehicleRoute->estimated_arrival_datetime);
+
+        if ($vehicleRoute->status === 'aprobada' && $now->greaterThanOrEqualTo($departure) && $now->lt($arrival)) {
+            $vehicleRoute->update(['status' => 'en_progreso']);
+        }
+
+        if ($vehicleRoute->status === 'en_progreso' && $now->greaterThanOrEqualTo($arrival)) {
+            $vehicleRoute->update(['status' => 'finalizada']);
+            $vehicleRoute->vehicle?->update(['status' => 'disponible']);
         }
     }
 }
