@@ -8,58 +8,38 @@ use App\Models\User;
 class DriverPolicy
 {
     /**
-     * Determina si el usuario puede ver la lista de conductores
+     * Los tres roles pueden ver el listado y el detalle de conductores
      */
     public function viewAny(User $user): bool
     {
-        // Admin y Driver pueden ver la lista
-        return in_array($user->role->name, ['Admin', 'Driver']);
+        return in_array($user->role->name, ['Administrador', 'Logística', 'Conductor']);
     }
 
-    /**
-     * Determina si el usuario puede ver un conductor específico
-     */
     public function view(User $user, Driver $driver): bool
     {
-        return in_array($user->role->name, ['Admin', 'Driver']);
+        return in_array($user->role->name, ['Administrador', 'Logística', 'Conductor']);
     }
 
     /**
-     * Determina si el usuario puede crear conductores
+     * Solo el Administrador puede CRUD
      */
-    public function create(User $user): bool
-    {
-        return $user->role->name === 'Admin';
+    public function create(User $user): bool 
+    { 
+        return $user->role->name === 'Administrador'; 
     }
 
-    /**
-     * Determina si el usuario puede actualizar un conductor
-     */
-    public function update(User $user, Driver $driver): bool
-    {
-        return $user->role->name === 'Admin';
+    public function update(User $user, Driver $driver): bool 
+    { 
+        return $user->role->name === 'Administrador'; 
     }
 
-    /**
-     * Determina si el usuario puede eliminar un conductor
-     */
-    public function delete(User $user, Driver $driver): bool
-    {
-        return $user->role->name === 'Admin';
+    public function delete(User $user, Driver $driver): bool 
+    { 
+        return $user->role->name === 'Administrador'; 
     }
 
-    public function restore(User $user, Driver $driver): bool
-    {
-        return $user->role->name === 'Admin';
-    }
-
-    public function assign(User $user, Driver $driver): bool
-    {
-        return $user->role->name === 'Admin';
-    }
-
-    public function unassign(User $user, Driver $driver): bool
-    {
-        return $user->role->name === 'Admin';
+    public function restore(User $user, Driver $driver): bool 
+    { 
+        return $user->role->name === 'Administrador'; 
     }
 }

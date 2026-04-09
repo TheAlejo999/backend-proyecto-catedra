@@ -8,26 +8,38 @@ use App\Models\User;
 class RoutePolicy
 {
     /**
-     * Ambos roles pueden ver el listado de rutas
+     * Los tres roles pueden ver las rutas disponibles
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role->name, ['Admin', 'Driver']);
+        return in_array($user->role->name, ['Administrador', 'Logística', 'Conductor']);
     }
 
-    /**
-     * Ambos roles pueden ver una ruta específica
-     */
     public function view(User $user, Route $route): bool
     {
-        return in_array($user->role->name, ['Admin', 'Driver']);
+        return in_array($user->role->name, ['Administrador', 'Logística', 'Conductor']);
     }
 
     /**
-     * Solo el Admin puede hacer CRUD en rutas
+     * Administrador y Logística pueden gestionar las rutas
      */
-    public function create(User $user): bool { return $user->role->name === 'Admin'; }
-    public function update(User $user, Route $route): bool { return $user->role->name === 'Admin'; }
-    public function delete(User $user, Route $route): bool { return $user->role->name === 'Admin'; }
-    public function restore(User $user, Route $route): bool { return $user->role->name === 'Admin'; }
+    public function create(User $user): bool 
+    { 
+        return in_array($user->role->name, ['Administrador', 'Logística']); 
+    }
+
+    public function update(User $user, Route $route): bool 
+    { 
+        return in_array($user->role->name, ['Administrador', 'Logística']); 
+    }
+
+    public function delete(User $user, Route $route): bool 
+    { 
+        return in_array($user->role->name, ['Administrador', 'Logística']); 
+    }
+
+    public function restore(User $user, Route $route): bool 
+    { 
+        return in_array($user->role->name, ['Administrador', 'Logística']); 
+    }
 }

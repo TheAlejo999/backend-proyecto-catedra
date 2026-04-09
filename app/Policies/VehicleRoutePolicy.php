@@ -8,38 +8,50 @@ use App\Models\User;
 class VehicleRoutePolicy
 {
     /**
-     * Determina si el usuario puede ver la lista de rutas de vehículos
+     * Los tres roles pueden ver el listado de asignaciones de rutas
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role->name, ['Admin', 'Driver']);
+        return in_array($user->role->name, ['Administrador', 'Logística', 'Conductor']);
     }
 
     /**
-     * Determina si el usuario puede ver una ruta de vehículo específica
+     * Los tres roles pueden ver una asignación específica
      */
     public function view(User $user, VehicleRoute $vehicleRoute): bool
     {
-        return in_array($user->role->name, ['Admin', 'Driver']);
+        return in_array($user->role->name, ['Administrador', 'Logística', 'Conductor']);
     }
 
     /**
-     * Solo el Administrador puede crear asignaciones de rutas
+     * Solo Administrador y Logística pueden crear nuevas asignaciones
      */
-    public function create(User $user): bool { return $user->role->name === 'Admin'; }
+    public function create(User $user): bool
+    {
+        return in_array($user->role->name, ['Administrador', 'Logística']);
+    }
 
     /**
-     * Solo el Administrador puede actualizar asignaciones
+     * Solo Administrador y Logística pueden editar asignaciones existentes
      */
-    public function update(User $user, VehicleRoute $vehicleRoute): bool { return $user->role->name === 'Admin'; }
+    public function update(User $user, VehicleRoute $vehicleRoute): bool
+    {
+        return in_array($user->role->name, ['Administrador', 'Logística']);
+    }
 
     /**
-     * Solo el Administrador puede eliminar registros de rutas
+     * Solo Administrador y Logística pueden eliminar o cancelar asignaciones
      */
-    public function delete(User $user, VehicleRoute $vehicleRoute): bool { return $user->role->name === 'Admin'; }
+    public function delete(User $user, VehicleRoute $vehicleRoute): bool
+    {
+        return in_array($user->role->name, ['Administrador', 'Logística']);
+    }
 
     /**
-     * Solo el Administrador puede restaurar rutas eliminadas
+     * Solo Administrador y Logística pueden restaurar registros eliminados
      */
-    public function restore(User $user, VehicleRoute $vehicleRoute): bool { return $user->role->name === 'Admin'; }
+    public function restore(User $user, VehicleRoute $vehicleRoute): bool
+    {
+        return in_array($user->role->name, ['Administrador', 'Logística']);
+    }
 }
