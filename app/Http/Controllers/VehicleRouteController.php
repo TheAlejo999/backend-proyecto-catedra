@@ -283,12 +283,10 @@ class VehicleRouteController extends Controller
      *     )
      * )
      */
-    public function update(VehicleRouteRequest $request, int $vehicleroute)
+    public function update(VehicleRouteRequest $request, VehicleRoute $vehicleroute)
     {
-        $updatedVehicleRoute = VehicleRoute::findOrFail($vehicleroute);
-
         // Solo se puede actualizar si está en pendiente
-        if ($updatedVehicleRoute->status !== 'pendiente') {
+        if ($vehicleroute->status !== 'pendiente') {
             return response()->json([
                 'message' => 'Solo se pueden actualizar rutas en estado pendiente.'
             ], 422);
@@ -337,20 +335,20 @@ class VehicleRouteController extends Controller
             }
 
             $data['status'] = 'pendiente';
-            $updatedVehicleRoute->update($data);
+            $vehicleroute->update($data);
 
             return response()->json([
                 'message'       => 'Combustible insuficiente, se actualizó la orden de abastecimiento.',
                 'required_fuel' => $data['estimated_fuel'],
                 'current_fuel'  => round($currentGallons, 2),
                 'missing_fuel'  => round($data['estimated_fuel'] - $currentGallons, 2),
-                'vehicle_route' => VehicleRouteResource::make($updatedVehicleRoute)
+                'vehicle_route' => VehicleRouteResource::make($vehicleroute)
             ], 200);
         }
 
         // Si ahora tiene combustible suficiente
         $data['status'] = 'aprobada';
-        $updatedVehicleRoute->update($data);
+        $vehicleroute->update($data);
         $vehicle->update(['status' => 'en_ruta']);
 
         // Eliminar la orden de abastecimiento pendiente si ya no se necesita
@@ -359,7 +357,7 @@ class VehicleRouteController extends Controller
             ->first()
                 ?->delete();
 
-        return response()->json(VehicleRouteResource::make($updatedVehicleRoute), 200);
+        return response()->json(VehicleRouteResource::make($vehicleroute), 200);
     }
 
     /**

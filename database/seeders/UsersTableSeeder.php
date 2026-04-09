@@ -13,7 +13,7 @@ class UsersTableSeeder extends Seeder
         DB::table('users')->insert([
             [
                 'role_id' => 1,
-                'name' => 'Admin User',
+                'name' => 'Administrador',
                 'email' => 'admin@example.com',
                 'password' => Hash::make('password'),
                 'dui' => '00000000-0',
@@ -21,7 +21,7 @@ class UsersTableSeeder extends Seeder
             ],
             [
                 'role_id' => 2,
-                'name' => 'Logística User',
+                'name' => 'Logística',
                 'email' => 'logistica@example.com',
                 'password' => Hash::make('password'),
                 'dui' => '11111111-2',
@@ -29,7 +29,7 @@ class UsersTableSeeder extends Seeder
             ],
             [
                 'role_id' => 3,
-                'name' => 'Conductor User',
+                'name' => 'Conductor',
                 'email' => 'conductor@example.com',
                 'password' => Hash::make('password'),
                 'dui' => '22222222-3',

@@ -13,8 +13,9 @@ use Illuminate\Http\Request;
 
 class FuelSupplyController extends Controller
 {
-    public function __construct() { 
-        $this->authorizeResource(FuelSupply::class, 'fuel_supply'); 
+    public function __construct()
+    {
+        $this->authorizeResource(FuelSupply::class, 'fuel_supply');
     }
     /**
      * @OA\Get(
@@ -271,11 +272,9 @@ class FuelSupplyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateFuelSupplyRequest $request, int $fuelSupply)
+    public function update(UpdateFuelSupplyRequest $request, FuelSupply $fuelSupply)
     {
-        $updatedFuelSupply = FuelSupply::findOrFail($fuelSupply);
-
-        if ($updatedFuelSupply->status === 'completado') {
+        if ($fuelSupply->status === 'completado') {
             return response()->json([
                 'message' => 'Esta orden de abastecimiento ya fue completada y no puede editarse.'
             ], 422);
@@ -283,37 +282,29 @@ class FuelSupplyController extends Controller
 
         $data = $request->validated();
 
-        // Si no se manda fecha
         if (empty($data['date'])) {
             $data['date'] = now()->toDateString();
         }
 
-        // Precio por galón por si no se envia en el request
         $price = !empty($data['price_per_gallon']) ? (float) $data['price_per_gallon'] : 4.60;
         $data['price_per_gallon'] = $price;
 
-        // Calcular total_cost por si no se envia en el request
         if (empty($data['total_cost'])) {
-            $data['total_cost'] = round($price * $updatedFuelSupply->amount_gallons, 2);
+            $data['total_cost'] = round($price * $fuelSupply->amount_gallons, 2);
         }
 
-        $updatedFuelSupply->update($data);
+        $fuelSupply->update($data);
 
-        // Si se marca como completado, disparar lógica del vehículo y ruta
         if (!empty($data['status']) && $data['status'] === 'completado') {
-
-            // Actualizar fuel_percentage del vehículo a 100%
-            $vehicle = Vehicle::findOrFail($updatedFuelSupply->vehicle_id);
+            $vehicle = Vehicle::findOrFail($fuelSupply->vehicle_id);
             $vehicle->update(['fuel_percentage' => 100]);
 
-            // Verificar si hay una ruta pendiente y aprobarla
             $pendingRoute = VehicleRoute::where('vehicle_id', $vehicle->id)
                 ->where('status', 'pendiente')
                 ->first();
 
             if ($pendingRoute) {
                 $currentGallons = ($vehicle->fuel_percentage / 100) * $vehicle->tank_capacity_gallons;
-
                 if ($currentGallons >= $pendingRoute->estimated_fuel) {
                     $pendingRoute->update(['status' => 'aprobada']);
                     $vehicle->update(['status' => 'en_ruta']);
@@ -321,7 +312,7 @@ class FuelSupplyController extends Controller
             }
         }
 
-        return response()->json(FuelSupplyResource::make($updatedFuelSupply), 200);
+        return response()->json(FuelSupplyResource::make($fuelSupply), 200);
     }
 
     /**
@@ -356,15 +347,12 @@ class FuelSupplyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $fuelSupply)
+    public function destroy(FuelSupply $fuelSupply)
     {
-        $deleteFuelSupply = FuelSupply::findOrFail($fuelSupply)->delete();
-
-        if ($deleteFuelSupply) {
-            return response()->json([
-                'message' => 'Abastecimiento de combustible eliminado correctamente'
-            ], 200);
-        }
+        $fuelSupply->delete();
+        return response()->json([
+            'message' => 'Abastecimiento de combustible eliminado correctamente'
+        ], 200);
     }
 
     /**
