@@ -1908,6 +1908,468 @@
                 }
             }
         },
+        "/v1/maintenances": {
+            "get": {
+                "tags": [
+                    "Mantenimientos"
+                ],
+                "summary": "Listar todos los mantenimientos",
+                "operationId": "4584453f7838dfff608cb1a49746a8ef",
+                "parameters": [
+                    {
+                        "name": "vehicle_id",
+                        "in": "query",
+                        "description": "Filtrar por ID de vehículo",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de mantenimientos obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "vehicle": {
+                                                        "description": "Datos del vehículo asociado",
+                                                        "type": "object"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Cambio de aceite y filtros"
+                                                    },
+                                                    "cost": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 125.5
+                                                    },
+                                                    "date": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2026-04-09"
+                                                    },
+                                                    "next_maintenance_mileage": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 55000
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Mantenimientos"
+                ],
+                "summary": "Registrar un mantenimiento",
+                "operationId": "91ce40b962acb0020c9081d38406d715",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "vehicle_id",
+                                    "description",
+                                    "cost",
+                                    "date",
+                                    "next_maintenance_mileage"
+                                ],
+                                "properties": {
+                                    "vehicle_id": {
+                                        "description": "Debe existir en la base de datos",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Cambio de aceite y revisión general"
+                                    },
+                                    "cost": {
+                                        "description": "Monto mayor a 0 con hasta 2 decimales",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 150.75
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-04-09"
+                                    },
+                                    "next_maintenance_mileage": {
+                                        "description": "Kilometraje estimado para el siguiente mantenimiento",
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 60000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Mantenimiento registrado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Mantenimiento registrado con éxito."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "vehicle": {
+                                                    "description": "Datos del vehículo asociado",
+                                                    "type": "object"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Cambio de aceite y revisión general"
+                                                },
+                                                "cost": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 150.75
+                                                },
+                                                "date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2026-04-09"
+                                                },
+                                                "next_maintenance_mileage": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 60000
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Datos inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/maintenances/{maintenance}": {
+            "get": {
+                "tags": [
+                    "Mantenimientos"
+                ],
+                "summary": "Ver detalle de un mantenimiento",
+                "operationId": "dc5e3dc412920d6b764e3d22bb395cc7",
+                "parameters": [
+                    {
+                        "name": "maintenance",
+                        "in": "path",
+                        "description": "ID del mantenimiento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalle del mantenimiento obtenido exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer",
+                                            "example": 1
+                                        },
+                                        "vehicle": {
+                                            "description": "Datos del vehículo asociado",
+                                            "type": "object"
+                                        },
+                                        "description": {
+                                            "type": "string",
+                                            "example": "Cambio de aceite y filtros"
+                                        },
+                                        "cost": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 125.5
+                                        },
+                                        "date": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "example": "2026-04-09"
+                                        },
+                                        "next_maintenance_mileage": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 55000
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Mantenimiento no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [Maintenance]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Mantenimientos"
+                ],
+                "summary": "Eliminar un mantenimiento",
+                "operationId": "ddabf7b87f777a2e6c82f0fad7ed55a0",
+                "parameters": [
+                    {
+                        "name": "maintenance",
+                        "in": "path",
+                        "description": "ID del mantenimiento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Mantenimiento eliminado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Registro eliminado."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Mantenimiento no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [Maintenance]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Mantenimientos"
+                ],
+                "summary": "Actualizar un mantenimiento",
+                "operationId": "c1c40c3ef5da63b386685d444f4dd0ad",
+                "parameters": [
+                    {
+                        "name": "maintenance",
+                        "in": "path",
+                        "description": "ID del mantenimiento",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "vehicle_id": {
+                                        "description": "Debe existir en la base de datos",
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Ajuste de frenos y revisión de motor"
+                                    },
+                                    "cost": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 210
+                                    },
+                                    "date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2026-04-10"
+                                    },
+                                    "next_maintenance_mileage": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 65000
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mantenimiento actualizado exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Registro de mantenimiento actualizado."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "vehicle": {
+                                                    "description": "Datos del vehículo asociado",
+                                                    "type": "object"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "example": "Ajuste de frenos y revisión de motor"
+                                                },
+                                                "cost": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 210
+                                                },
+                                                "date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2026-04-10"
+                                                },
+                                                "next_maintenance_mileage": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 65000
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Datos inválidos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid."
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Mantenimiento no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "No query results for model [Maintenance]."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/v1/roles": {
             "get": {
                 "tags": [
@@ -3737,6 +4199,10 @@
         {
             "name": "Abastecimiento de combustible",
             "description": "Abastecimiento de combustible"
+        },
+        {
+            "name": "Mantenimientos",
+            "description": "Mantenimientos"
         },
         {
             "name": "Roles",

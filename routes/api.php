@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FuelSupplyController;
+use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RouteController;
 use App\Http\Controllers\VehicleController;
@@ -41,6 +42,7 @@ Route::group(['prefix' => 'v1'], function () {
         // Gestión de Suministro de Combustible
         Route::apiResource('fuel-supplies', FuelSupplyController::class);
         Route::post('fuel-supplies/{fuel_supply}/restore', [FuelSupplyController::class, 'restore']);
+        Route::apiResource('maintenances', MaintenanceController::class);
 
         // Gestión de Flotas
         Route::apiResource('fleets', FleetController::class);
