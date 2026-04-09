@@ -24,7 +24,7 @@ class FuelSupplyFactory extends Factory
         'price_per_gallon' => 4.6,
         'total_cost' => 46,
         'date' => now(),
-        'status' => 'pendiente'
+        'status' => 'pendiente',
     ];
 }
 }

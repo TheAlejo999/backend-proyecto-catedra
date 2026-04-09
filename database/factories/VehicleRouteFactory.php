@@ -24,7 +24,7 @@ class VehicleRouteFactory extends Factory
         'estimated_fuel' => 10,
         'departure_datetime' => now(),
         'estimated_arrival_datetime' => now()->addHour(),
-        'status' => 'pendiente'
+        'status' => 'pendiente',
     ];
 }
 }
