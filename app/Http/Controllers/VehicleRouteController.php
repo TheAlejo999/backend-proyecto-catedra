@@ -79,6 +79,7 @@ class VehicleRouteController extends Controller
     public function index(Request $request)
     {
         $vehicleRoutes = VehicleRoute::query()
+        ->with(['vehicle', 'route'])
             ->when($request->boolean('trashed'), function ($query) {
                 $query->onlyTrashed();
             })
@@ -187,6 +188,7 @@ class VehicleRouteController extends Controller
         $vehicleRoute = VehicleRoute::create($data);
         $vehicle->update(['status' => 'en_ruta']);
 
+        $vehicleRoute->load(['vehicle', 'route']);
         return response()->json(VehicleRouteResource::make($vehicleRoute), 201);
     }
 
@@ -227,6 +229,7 @@ class VehicleRouteController extends Controller
      */
     public function show(VehicleRoute $vehicle_route)
     {
+        $vehicle_route->load(['vehicle', 'route']);
         $this->syncStatus($vehicle_route);
         return response()->json(VehicleRouteResource::make($vehicle_route), 200);
     }
@@ -337,6 +340,7 @@ class VehicleRouteController extends Controller
             $data['status'] = 'pendiente';
             $vehicleroute->update($data);
 
+            $vehicleroute->load(['vehicle', 'route']);
             return response()->json([
                 'message'       => 'Combustible insuficiente, se actualizó la orden de abastecimiento.',
                 'required_fuel' => $data['estimated_fuel'],
@@ -357,6 +361,7 @@ class VehicleRouteController extends Controller
             ->first()
                 ?->delete();
 
+        $vehicleroute->load(['vehicle', 'route']);
         return response()->json(VehicleRouteResource::make($vehicleroute), 200);
     }
 

@@ -80,11 +80,12 @@ class FuelSupplyController extends Controller
         $query = FuelSupply::query();
 
         if ($request->boolean('trashed')) {
-            $fuelSupplies = $query->onlyTrashed()->get();
+            $fuelSupplies = $query->onlyTrashed()->with(['vehicle', 'route'])->get();
             return response()->json(FuelSupplyResource::collection($fuelSupplies), 200);
         }
 
         $fuelSupplies = $query
+        ->with(['vehicle', 'route'])
             ->when($request->has('vehicle'), fn($q) => $q->where('vehicle_id', $request->input('vehicle')))
             ->when($request->has('date'), fn($q) => $q->where('date', $request->input('date')))
             ->when($request->has('route'), fn($q) => $q->where('route_id', $request->input('route')))
@@ -168,7 +169,7 @@ class FuelSupplyController extends Controller
         $data['status'] = 'pendiente'; // siempre pendiente al crear
 
         $fuelSupply = FuelSupply::create($data);
-        $fuelSupply->refresh();
+        $fuelSupply->load(['vehicle', 'route']);
 
         return response()->json(FuelSupplyResource::make($fuelSupply), 201);
     }
@@ -214,6 +215,7 @@ class FuelSupplyController extends Controller
      */
     public function show(FuelSupply $fuelSupply)
     {
+        $fuelSupply->load(['vehicle', 'route']);
         return response()->json(FuelSupplyResource::make($fuelSupply), 200);
     }
 
@@ -312,6 +314,7 @@ class FuelSupplyController extends Controller
             }
         }
 
+        $fuelSupply->load(['vehicle', 'route']);
         return response()->json(FuelSupplyResource::make($fuelSupply), 200);
     }
 

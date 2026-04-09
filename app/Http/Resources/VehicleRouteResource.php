@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class VehicleRouteResource extends JsonResource
-{
+{ 
     /**
      * Transform the resource into an array.
      *
@@ -16,8 +16,8 @@ class VehicleRouteResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'vehicle_id' => VehicleResource::make($this->whenLoaded('vehicle')),
-            'route_id'  => RouteResource::make($this->whenLoaded('route')),
+            'vehicle' => VehicleResource::make($this->whenLoaded('vehicle')),
+            'route'  => RouteResource::make($this->whenLoaded('route')),
             'load_weight' => $this->load_weight,
             'estimated_fuel' => $this->estimated_fuel, //esto lo calculara el controlador
             'departure_datetime' => $this->departure_datetime,

@@ -17,7 +17,7 @@ class FuelSupplyResource extends JsonResource
         return [
             'id' => $this->id,
             'vehicle' => VehicleResource::make($this->whenLoaded('vehicle')),
-            'route'  => RouteResource::make($this->whenLoaded('vehicle')),
+            'route'  => RouteResource::make($this->whenLoaded('route')),
             'amount_gallons' => $this->amount_gallons,
             'price_per_gallon' => $this->price_per_gallon,
             'total_cost'=> $this->total_cost,
