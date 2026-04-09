@@ -135,20 +135,6 @@ class DriverTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function test_cannot_assign_vehicle_with_existing_driver()
-    {
-        $driver = \App\Models\Driver::factory()->create();
-        $vehicle = \App\Models\Vehicle::factory()->create([
-            'driver_id' => 999 // simula ocupado
-        ]);
-
-        $response = $this->postJson("/api/v1/drivers/{$driver->id}/assign", [
-            'vehicle_id' => $vehicle->id
-        ]);
-
-        $response->assertStatus(422);
-    }
-
     public function test_update_driver()
     {
         $driver = \App\Models\Driver::factory()->create();

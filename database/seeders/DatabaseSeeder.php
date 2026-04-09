@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            EnumsSeeder::class,
             RolesTableSeeder::class,
             UsersTableSeeder::class,
             FleetsTableSeeder::class,
@@ -25,7 +26,6 @@ class DatabaseSeeder extends Seeder
             FuelSuppliesTableSeeder::class,
             MaintenancesTableSeeder::class,
             VehicleRouteTableSeeder::class,
-            EnumsSeeder::class,
         ]);
     }
 }
