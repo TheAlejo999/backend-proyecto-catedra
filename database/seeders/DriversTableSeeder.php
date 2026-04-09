@@ -11,9 +11,9 @@ class DriversTableSeeder extends Seeder
     {
         DB::table('drivers')->insert([
             [
-                'user_id' => 2,
+                'user_id' => 2, // Debe existir en users
                 'license_number' => 'A1234567',
-                'license_expiration' => now()->addYear(),
+                'license_expiration' => now()->addYear()->toDateString(),
                 'is_available' => true,
             ],
         ]);

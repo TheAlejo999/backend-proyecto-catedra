@@ -24,7 +24,7 @@ class UsersTableSeeder extends Seeder
                 'name' => 'Operador User',
                 'email' => 'operador@example.com',
                 'password' => Hash::make('password'),
-                'dui' => '11111111-1',
+                'dui' => '11111111-2',
                 'hiring_date' => now(),
             ],
         ]);

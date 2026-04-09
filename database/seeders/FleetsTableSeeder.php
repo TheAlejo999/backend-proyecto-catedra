@@ -12,12 +12,12 @@ class FleetsTableSeeder extends Seeder
         DB::table('fleets')->insert([
             [
                 'name' => 'Flota Liviana',
-                'type' => 'LIVIANA',
+                'type' => 'liviana',
                 'description' => 'Flota de vehículos livianos',
             ],
             [
                 'name' => 'Flota Pesada',
-                'type' => 'PESADA',
+                'type' => 'pesada',
                 'description' => 'Flota de vehículos pesados',
             ],
         ]);
