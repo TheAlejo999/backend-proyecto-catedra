@@ -21,10 +21,18 @@ class UsersTableSeeder extends Seeder
             ],
             [
                 'role_id' => 2,
-                'name' => 'Operador User',
-                'email' => 'operador@example.com',
+                'name' => 'Logística User',
+                'email' => 'logistica@example.com',
                 'password' => Hash::make('password'),
                 'dui' => '11111111-2',
+                'hiring_date' => now(),
+            ],
+            [
+                'role_id' => 3,
+                'name' => 'Conductor User',
+                'email' => 'conductor@example.com',
+                'password' => Hash::make('password'),
+                'dui' => '22222222-3',
                 'hiring_date' => now(),
             ],
         ]);
