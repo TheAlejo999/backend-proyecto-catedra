@@ -151,7 +151,7 @@ class FleetController extends Controller
      *     )
      * )
      */
-    public function show(Fleet $fleet): JsonResponse
+    public function show(Fleet $fleet)
     {
         $fleet->loadCount('vehicles');
         $fleet->load('vehicles');
@@ -214,7 +214,7 @@ class FleetController extends Controller
      *     )
      * )
      */
-    public function update(UpdateFleetRequest $request, Fleet $fleet): JsonResponse
+    public function update(UpdateFleetRequest $request, Fleet $fleet)
     {
         $fleet->update($request->validated());
 
@@ -259,7 +259,7 @@ class FleetController extends Controller
      *     )
      * )
      */
-    public function destroy(Fleet $fleet): JsonResponse
+    public function destroy(Fleet $fleet)
     {
         // no se puede eliminar una flota con vehiculos activos
         if ($fleet->vehicles()->exists()) {
@@ -275,18 +275,14 @@ class FleetController extends Controller
         ], 200);
     }
 
-    public function restore(int $fleet): JsonResponse
+    public function restore(int $fleet)
     {
         try {
             Fleet::onlyTrashed()->findOrFail($fleet)->restore();
 
-            return response()->json([
-                'message' => 'Flota restaurada exitosamente.',
-            ], 200);
+            return response()->json(['message' => 'Flota restaurada exitosamente.',], 200);
         } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'La flota ingresada no existe entre las eliminadas.',
-            ], 404);
+            return response()->json(['message' => 'La flota ingresada no existe entre las eliminadas.',], 404);
         }
     }
 }
