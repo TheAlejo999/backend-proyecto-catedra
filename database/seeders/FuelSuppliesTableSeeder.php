@@ -16,7 +16,7 @@ class FuelSuppliesTableSeeder extends Seeder
                 'amount_gallons' => 20,
                 'price_per_gallon' => 4.25,
                 'total_cost' => 85.00,
-                'state' => 'APROBADO',
+                'status' => 'pendiente',
                 'date' => now(),
             ],
         ]);
