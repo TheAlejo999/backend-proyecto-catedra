@@ -13,6 +13,9 @@ use App\Http\Requests\UpdateFleetRequest;
 
 class FleetController extends Controller
 {
+    public function __construct() { 
+        $this->authorizeResource(\App\Models\Fleet::class, 'fleet'); 
+    }
     /**
      * @OA\Get(
      *     path="/fleets",
@@ -277,7 +280,10 @@ class FleetController extends Controller
     public function restore(int $fleet)
     {
         try {
-            Fleet::onlyTrashed()->findOrFail($fleet)->restore();
+            $fleetToRestore = Fleet::onlyTrashed()->findOrFail($fleet);
+            $this->authorize('restore', $fleetToRestore);
+
+            $fleetToRestore->restore();
 
             return response()->json(['message' => 'Flota restaurada exitosamente.',], 200);
         } catch (ModelNotFoundException $e) {

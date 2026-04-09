@@ -3,86 +3,77 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\RoleRequest;
-use App\Http\Requests\RolRequest;
 use App\Http\Resources\RoleResource;
-use App\Http\Resources\RolResource;
-use App\Models\Rol;
 use App\Models\Role;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
+    public function __construct() { 
+
+        $this->authorizeResource(Role::class, 'role'); 
+    }
+
     public function index(Request $request)
     {
-        $rol = Role::query();
+        $roles = Role::query();
 
         if ($request->boolean('trashed')) {
-            $rol = $rol->onlyTrashed()->get();
+            $roles = $roles->onlyTrashed()->get();
         } else {
-            $rol = $rol
+            $roles = $roles
                 ->when($request->has('name'), function ($query) use ($request) {
                     $query->where('name', 'like', $request->input('name') . '%');
                 })->get();
         } 
-        return response()->json(RoleResource::collection($rol), 200);
+        return response()->json(RoleResource::collection($roles), 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(RoleRequest $request)
     {
         $data = $request->validated();
 
-        $rol = Role::create($data);
-        $rol->refresh();
+        $role = Role::create($data);
+        $role->refresh();
 
-        return response()->json(RoleResource::make($rol), 201);
+        return response()->json(RoleResource::make($role), 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Role $rol)
+    public function show(Role $role)
     {
-        return response()->json(RoleResource::make($rol), 200);
+        return response()->json(RoleResource::make($role), 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(RoleRequest $request, int $rol)
+    public function update(RoleRequest $request, Role $role)
     {
-        $updatedRol = Role::findOrFail($rol);
-
         $data = $request->validated();
-        $updatedRol->update($data);
+        $role->update($data);
 
-        return response()->json(RoleResource::make($updatedRol), 200);
+        return response()->json(RoleResource::make($role), 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $rol)
+    public function destroy(Role $role)
     {
-        $deleteRol = Role::findOrFail($rol)->delete();
+        $role->delete();
 
-        if ($deleteRol) {
-            return response()->json([
-                'message' => 'Rol eliminado correctamente'
-            ], 200);
-        }
+        return response()->json([
+            'message' => 'Rol eliminado correctamente'
+        ], 200);
     }
 
-    public function restore(int $rol)
+    public function restore(int $roleId)
     {
         try {
-            $restoreRol = Role::onlyTrashed()->findOrFail($rol)->restore();
+            $roleToRestore = Role::onlyTrashed()->findOrFail($roleId);
+            $this->authorize('restore', $roleToRestore);
+
+            $roleToRestore->restore();
+
             return response()->json([
-                'message' => 'Ruta restaurada correctamente'
+                'message' => 'Rol restaurado correctamente'
             ], 200);
+            
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'El rol ingresado no existe entre los eliminados'
