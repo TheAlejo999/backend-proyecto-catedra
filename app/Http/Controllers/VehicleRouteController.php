@@ -20,6 +20,59 @@ class VehicleRouteController extends Controller
         $this->authorizeResource(VehicleRoute::class, 'vehicle_route');
     }
 
+    /**
+     * @OA\Get(
+     *     path="/v1/vehicle-route",
+     *     summary="Listar todas las asignaciones de ruta",
+     *     tags={"Asignación de rutas"},
+     *     @OA\Parameter(
+     *         name="trashed",
+     *         in="query",
+     *         required=false,
+     *         description="Mostrar asignaciones eliminadas",
+     *         @OA\Schema(type="boolean", example=true)
+     *     ),
+     *     @OA\Parameter(
+     *         name="vehicle",
+     *         in="query",
+     *         required=false,
+     *         description="Filtrar por ID de vehículo",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="route",
+     *         in="query",
+     *         required=false,
+     *         description="Filtrar por ID de ruta",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         required=false,
+     *         description="Filtrar por estado",
+     *         @OA\Schema(type="string", enum={"pendiente","aprobada","en_progreso","finalizada","cancelada"}, example="aprobada")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de asignaciones obtenida exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="vehicle_id", type="object", description="Datos del vehículo"),
+     *                     @OA\Property(property="route_id", type="object", description="Datos de la ruta"),
+     *                     @OA\Property(property="load_weight", type="number", example=1200.00),
+     *                     @OA\Property(property="estimated_fuel", type="number", example=82.13),
+     *                     @OA\Property(property="departure_datetime", type="string", example="2026-04-19 12:00:00"),
+     *                     @OA\Property(property="estimated_arrival_datetime", type="string", example="2026-04-19 14:00:00"),
+     *                     @OA\Property(property="status", type="string", example="aprobada")
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
+     */
 
     public function index(Request $request)
     {
@@ -35,6 +88,56 @@ class VehicleRouteController extends Controller
         return response()->json(VehicleRouteResource::collection($vehicleRoutes), 200);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/v1/vehicle-route",
+     *     summary="Asignar una ruta a un vehículo",
+     *     tags={"Asignación de rutas"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"vehicle_id","route_id","load_weight","departure_datetime","status"},
+     *             @OA\Property(property="vehicle_id", type="integer", example=1, description="Debe existir en la BD y estar en estado disponible"),
+     *             @OA\Property(property="route_id", type="integer", example=1, description="Debe existir en la BD"),
+     *             @OA\Property(property="load_weight", type="number", example=1200.00, description="Entre 0.01 y 25000 kg, no puede exceder la capacidad del vehículo"),
+     *             @OA\Property(property="departure_datetime", type="string", example="2026-04-19 12:00:00", description="Debe ser igual o posterior a hoy"),
+     *             @OA\Property(property="status", type="string", enum={"pendiente","aprobada","en_progreso","finalizada","cancelada"}, example="aprobada")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Ruta asignada exitosamente con combustible suficiente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="vehicle_id", type="object", description="Datos del vehículo"),
+     *             @OA\Property(property="route_id", type="object", description="Datos de la ruta"),
+     *             @OA\Property(property="load_weight", type="number", example=1200.00),
+     *             @OA\Property(property="estimated_fuel", type="number", example=82.13, description="Calculado automáticamente"),
+     *             @OA\Property(property="departure_datetime", type="string", example="2026-04-19 12:00:00"),
+     *             @OA\Property(property="estimated_arrival_datetime", type="string", example="2026-04-19 14:00:00", description="Calculado automáticamente"),
+     *             @OA\Property(property="status", type="string", example="aprobada")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Combustible insuficiente, se generó orden de abastecimiento",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Combustible insuficiente, se generó una orden de abastecimiento."),
+     *             @OA\Property(property="required_fuel", type="number", example=82.13),
+     *             @OA\Property(property="current_fuel", type="number", example=50.00),
+     *             @OA\Property(property="missing_fuel", type="number", example=32.13),
+     *             @OA\Property(property="vehicle_route", type="object", description="Datos de la asignación en estado pendiente")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Datos inválidos",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="El vehículo no está disponible.")
+     *         )
+     *     )
+     * )
+     */
     public function store(VehicleRouteRequest $request)
     {
         $data = $request->validated();
@@ -83,12 +186,110 @@ class VehicleRouteController extends Controller
         return response()->json(VehicleRouteResource::make($vehicleRoute), 201);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/v1/vehicle-route/{vehicleroute}",
+     *     summary="Ver detalle de una asignación de ruta",
+     *     tags={"Asignación de rutas"},
+     *     @OA\Parameter(
+     *         name="vehicleroute",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la asignación",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Detalle de la asignación obtenido exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="vehicle_id", type="object", description="Datos del vehículo"),
+     *             @OA\Property(property="route_id", type="object", description="Datos de la ruta"),
+     *             @OA\Property(property="load_weight", type="number", example=1200.00),
+     *             @OA\Property(property="estimated_fuel", type="number", example=82.13),
+     *             @OA\Property(property="departure_datetime", type="string", example="2026-04-19 12:00:00"),
+     *             @OA\Property(property="estimated_arrival_datetime", type="string", example="2026-04-19 14:00:00"),
+     *             @OA\Property(property="status", type="string", example="aprobada")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Asignación no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No query results for model [VehicleRoute].")
+     *         )
+     *     )
+     * )
+     */
     public function show(VehicleRoute $vehicle_route)
     {
         $this->syncStatus($vehicle_route);
         return response()->json(VehicleRouteResource::make($vehicle_route), 200);
     }
 
+    /**
+     * @OA\Patch(
+     *     path="/v1/vehicle-route/{vehicleroute}",
+     *     summary="Actualizar una asignación de ruta",
+     *     tags={"Asignación de rutas"},
+     *     @OA\Parameter(
+     *         name="vehicleroute",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la asignación",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="vehicle_id", type="integer", example=1, description="Debe existir en la BD"),
+     *             @OA\Property(property="route_id", type="integer", example=1, description="Debe existir en la BD"),
+     *             @OA\Property(property="load_weight", type="number", example=1200.00, description="Entre 0.01 y 25000 kg"),
+     *             @OA\Property(property="departure_datetime", type="string", example="2026-04-19 12:00:00", description="Debe ser igual o posterior a hoy"),
+     *             @OA\Property(property="status", type="string", enum={"pendiente","aprobada","en_progreso","finalizada","cancelada"}, example="pendiente")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Asignación actualizada exitosamente con combustible suficiente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example=1),
+     *             @OA\Property(property="vehicle_id", type="object", description="Datos del vehículo"),
+     *             @OA\Property(property="route_id", type="object", description="Datos de la ruta"),
+     *             @OA\Property(property="load_weight", type="number", example=1200.00),
+     *             @OA\Property(property="estimated_fuel", type="number", example=82.13),
+     *             @OA\Property(property="departure_datetime", type="string", example="2026-04-19 12:00:00"),
+     *             @OA\Property(property="estimated_arrival_datetime", type="string", example="2026-04-19 14:00:00"),
+     *             @OA\Property(property="status", type="string", example="aprobada")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Combustible insuficiente, se actualizó orden de abastecimiento",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Combustible insuficiente, se actualizó la orden de abastecimiento."),
+     *             @OA\Property(property="required_fuel", type="number", example=82.13),
+     *             @OA\Property(property="current_fuel", type="number", example=50.00),
+     *             @OA\Property(property="missing_fuel", type="number", example=32.13),
+     *             @OA\Property(property="vehicle_route", type="object", description="Datos de la asignación")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Solo se pueden actualizar rutas en estado pendiente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Solo se pueden actualizar rutas en estado pendiente.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Asignación no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No query results for model [VehicleRoute].")
+     *         )
+     *     )
+     * )
+     */
     public function update(VehicleRouteRequest $request, VehicleRoute $vehicle_route)
     {
         if ($vehicle_route->status !== 'pendiente') {
@@ -110,6 +311,41 @@ class VehicleRouteController extends Controller
         return response()->json(VehicleRouteResource::make($vehicle_route), 200);
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/v1/vehicle-route/{vehicleroute}",
+     *     summary="Eliminar una asignación de ruta",
+     *     tags={"Asignación de rutas"},
+     *     @OA\Parameter(
+     *         name="vehicleroute",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la asignación",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Asignación eliminada exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Ruta de vehículo eliminada correctamente.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Solo se pueden eliminar rutas en estado pendiente o aprobada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Solo se pueden eliminar rutas en estado pendiente o aprobada.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Asignación no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No query results for model [VehicleRoute].")
+     *         )
+     *     )
+     * )
+     */
     public function destroy(VehicleRoute $vehicle_route)
     {
         if (!in_array($vehicle_route->status, ['pendiente', 'aprobada'])) {
@@ -124,6 +360,41 @@ class VehicleRouteController extends Controller
         return response()->json(['message' => 'Ruta de vehículo eliminada correctamente.'], 200);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/v1/vehicle-route/{vehicleroute}/restore",
+     *     summary="Restaurar una asignación de ruta eliminada",
+     *     tags={"Asignación de rutas"},
+     *     @OA\Parameter(
+     *         name="vehicleroute",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la asignación",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Asignación restaurada exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Ruta de vehículo restaurada correctamente.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="El vehículo ya no está disponible",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No se puede restaurar la ruta porque el vehículo ya no está disponible.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Asignación no encontrada entre los eliminados",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="La ruta de vehículo ingresada no existe entre los eliminados.")
+     *         )
+     *     )
+     * )
+     */
     public function restore(int $vehicleroute)
     {
         try {
