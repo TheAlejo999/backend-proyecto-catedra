@@ -61,7 +61,7 @@ El sistema implementa un modelo de seguridad basado en **Laravel Sanctum** para 
    Agrega la siguiente variable a tu archivo `.env`: envL5_SWAGGER_GENERATE_ALWAYS=true
 
 ## Documentación de la API
-Una vez iniciado el servidor, puedes acceder a la documentación interactiva hecha con Swagger en:
+Una vez hayas configurado el proyecto correctamente, puedes acceder a la documentación interactiva hecha con Swagger en:
 `http://[dominio-del-proyecto]/api/documentation`
 
 Nota: si desea obtener la API KEY para probar la creacion de rutas, no dude en ponerse en contacto con nosotros.
