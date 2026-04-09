@@ -13,9 +13,10 @@ use Illuminate\Http\Request;
 
 class FuelSupplyController extends Controller
 {
-<<<<<<< Updated upstream
-    public function __construct()
-=======
+    public function __construct() { 
+        $this->authorizeResource(\App\Models\Fleet::class, 'fleet'); 
+    }
+
     /**
      * @OA\Get(
      *     path="/fuel-supplies",
@@ -73,12 +74,7 @@ class FuelSupplyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
->>>>>>> Stashed changes
-    {
-        $this->authorizeResource(FuelSupply::class, 'fuel_supply');
-    }
-
+    
     public function index(Request $request)
     {
         $query = FuelSupply::query();
@@ -96,24 +92,6 @@ class FuelSupplyController extends Controller
         return response()->json(FuelSupplyResource::collection($fuelSupplies), 200);
     }
 
-<<<<<<< Updated upstream
-    public function store(FuelSupplyRequest $request)
-    {
-        $data = $request->validated();
-    
-        if (!VehicleRoute::where('vehicle_id', $data['vehicle_id'])->where('route_id', $data['route_id'])->exists()) {
-            return response()->json(['message' => 'La ruta no está asignada a este vehículo.'], 422);
-        }
-    
-        $data['date'] = $data['date'] ?? now()->toDateString();
-        $data['status'] = 'pendiente'; 
-    
-        $fuelSupply = FuelSupply::create($data);
-        return response()->json(FuelSupplyResource::make($fuelSupply), 201);
-    }
-
-    public function show(FuelSupply $fuel_supply)
-=======
     /**
      * @OA\Post(
      *     path="/fuel-supplies",
@@ -155,42 +133,18 @@ class FuelSupplyController extends Controller
      * )
      */
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(FuelSupplyRequest $request)
     {
         $data = $request->validated();
-
-        $assigned = VehicleRoute::where('vehicle_id', $data['vehicle_id'])
-            ->where('route_id', $data['route_id'])
-            ->exists();
-
-        if (!$assigned) {
-            return response()->json([
-                'message' => 'La ruta seleccionada no está asignada a este vehículo.'
-            ], 422);
+    
+        if (!VehicleRoute::where('vehicle_id', $data['vehicle_id'])->where('route_id', $data['route_id'])->exists()) {
+            return response()->json(['message' => 'La ruta no está asignada a este vehículo.'], 422);
         }
-
-        // Si no se manda fecha, usar la fecha actual
-        if (empty($data['date'])) {
-            $data['date'] = now()->toDateString();
-        }
-
-        // Precio por galón por si no se envia en el request
-        $price = !empty($data['price_per_gallon']) ? (float) $data['price_per_gallon'] : 4.60;
-        $data['price_per_gallon'] = $price;
-
-        // Calcular total_cost por si no se envia en el request
-        if (empty($data['total_cost'])) {
-            $data['total_cost'] = round($price * $data['amount_gallons'], 2);
-        }
-
-        $data['status'] = 'pendiente'; // siempre pendiente al crear
-
+    
+        $data['date'] = $data['date'] ?? now()->toDateString();
+        $data['status'] = 'pendiente'; 
+    
         $fuelSupply = FuelSupply::create($data);
-        $fuelSupply->refresh();
-
         return response()->json(FuelSupplyResource::make($fuelSupply), 201);
     }
 
@@ -230,18 +184,11 @@ class FuelSupplyController extends Controller
      * )
      */
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(FuelSupply $fuelSupply)
->>>>>>> Stashed changes
+    public function show(FuelSupply $fuel_supply)
     {
         return response()->json(FuelSupplyResource::make($fuel_supply), 200);
     }
 
-<<<<<<< Updated upstream
-    public function update(UpdateFuelSupplyRequest $request, FuelSupply $fuel_supply)
-=======
     /**
      * @OA\Patch(
      *     path="/fuel-supplies/{fuelSupply}",
@@ -294,11 +241,7 @@ class FuelSupplyController extends Controller
      * )
      */
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateFuelSupplyRequest $request, int $fuelSupply)
->>>>>>> Stashed changes
+    public function update(UpdateFuelSupplyRequest $request, FuelSupply $fuel_supply)
     {
         if ($fuel_supply->status === 'completado') {
             return response()->json(['message' => 'Esta orden ya fue completada.'], 422);
@@ -321,9 +264,6 @@ class FuelSupplyController extends Controller
         return response()->json(FuelSupplyResource::make($fuel_supply), 200);
     }
 
-<<<<<<< Updated upstream
-    public function destroy(FuelSupply $fuel_supply)
-=======
     /**
      * @OA\Delete(
      *     path="/fuel-supplies/{fuelSupply}",
@@ -353,19 +293,12 @@ class FuelSupplyController extends Controller
      * )
      */
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $fuelSupply)
->>>>>>> Stashed changes
+    public function destroy(FuelSupply $fuel_supply)
     {
         $fuel_supply->delete();
         return response()->json(['message' => 'Abastecimiento eliminado correctamente'], 200);
     }
 
-<<<<<<< Updated upstream
-    public function restore(int $fuelSupplyId)
-=======
     /**
      * @OA\Post(
      *     path="/fuel-supplies/{fuelSupply}/restore",
@@ -395,8 +328,7 @@ class FuelSupplyController extends Controller
      * )
      */
 
-    public function restore(int $fuelSupply)
->>>>>>> Stashed changes
+    public function restore(int $fuelSupplyId)
     {
         try {
             $restoreFuelSupply = FuelSupply::onlyTrashed()->findOrFail($fuelSupplyId);

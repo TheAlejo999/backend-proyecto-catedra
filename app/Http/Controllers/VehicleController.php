@@ -13,12 +13,10 @@ use App\Models\Driver;
 
 class VehicleController extends Controller
 {
-<<<<<<< Updated upstream
     public function __construct()
     {
         $this->authorizeResource(Vehicle::class, 'vehicle');
     }
-=======
 
     /**
      * @OA\Get(
@@ -107,7 +105,6 @@ class VehicleController extends Controller
      *     )
      * )
      */
->>>>>>> Stashed changes
 
     /**
      * Display a listing of the resource.
@@ -273,10 +270,6 @@ class VehicleController extends Controller
         return response()->json(VehicleResource::make($vehicle), 200);
     }
 
-<<<<<<< Updated upstream
-
-    public function update(UpdateVehicleRequest $request, Vehicle $vehicle)
-=======
     /**
      * @OA\Patch(
      *     path="/v1/vehicles/{vehicle}",
@@ -337,11 +330,7 @@ class VehicleController extends Controller
      * )
      */
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateVehicleRequest $request, int $vehicle)
->>>>>>> Stashed changes
+    public function update(UpdateVehicleRequest $request, Vehicle $vehicle)
     {
         $data = $request->validated();
 
@@ -350,20 +339,7 @@ class VehicleController extends Controller
         return response()->json(VehicleResource::make($vehicle), 200);
     }
 
-    public function destroy(Vehicle $vehicle)
-    {
-        $vehicle->delete();
-
-        return response()->json([
-            'message' => 'Vehiculo eliminado correctamente'
-        ], 200);
-    }
-
     /**
-<<<<<<< Updated upstream
-     * Restore a trashed resource.
-     */
-=======
      * @OA\Delete(
      *     path="/v1/vehicles/{vehicle}",
      *     summary="Eliminar un vehículo",
@@ -391,19 +367,13 @@ class VehicleController extends Controller
      *     )
      * )
      */
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $vehicle)
+    public function destroy(Vehicle $vehicle)
     {
-        $deleteVehicle = Vehicle::findOrFail($vehicle)->delete();
+        $vehicle->delete();
 
-        if ($deleteVehicle) {
-            return response()->json([
-                'message' => 'Vehiculo eliminado correctamente'
-            ], 200);
-        }
+        return response()->json([
+            'message' => 'Vehiculo eliminado correctamente'
+        ], 200);
     }
 
     /**
@@ -434,7 +404,10 @@ class VehicleController extends Controller
      *     )
      * )
      */
->>>>>>> Stashed changes
+
+    /**
+     * Restore a trashed resource.
+     */
     public function restore(int $vehicle)
     {
         try {

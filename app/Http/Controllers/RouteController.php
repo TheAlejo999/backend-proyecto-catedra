@@ -15,14 +15,14 @@ class RouteController extends Controller
     public function __construct()
     {
 
-<<<<<<< Updated upstream
         $this->authorizeResource(Route::class, 'route');
     }
 
-    private function calcularDistancia(string $origin, string $destination): array|null { /* código... */ }
-    private function geocode(string $address, string $apiKey): array|null { /* código... */ }
-=======
-        // Paso 1: convertir texto a coordenadas
+    private function calcularDistancia(string $origin, string $destination): array|null
+    {
+        $apiKey = env('ORS_API_KEY');
+
+        // Paso 1: Geocoding — convertir texto a coordenadas
         $originCoords = $this->geocode($origin, $apiKey);
         if (!$originCoords)
             return null;
@@ -31,7 +31,7 @@ class RouteController extends Controller
         if (!$destinationCoords)
             return null;
 
-        // Paso 2: calcular distancia y tiempo
+        // Paso 2: Routing — calcular distancia y tiempo
         $response = Http::withHeaders([
             'Authorization' => $apiKey,
             'Content-Type' => 'application/json',
@@ -52,7 +52,7 @@ class RouteController extends Controller
 
         $summary = $data['routes'][0]['summary'];
 
-        // Distancia en km
+        // Distancia en metros → km
         $distanceKm = round($summary['distance'] / 1000, 2);
 
         // Duración en segundos → HH:MM
@@ -66,7 +66,6 @@ class RouteController extends Controller
             'estimated_time' => $estimatedTime,
         ];
     }
-
     private function geocode(string $address, string $apiKey): array|null
     {
         $response = Http::withHeaders([
@@ -93,7 +92,7 @@ class RouteController extends Controller
         ];
     }
 
-        /**
+    /**
      * @OA\Get(
      *     path="/v1/routes",
      *     summary="Listar rutas",
@@ -154,7 +153,6 @@ class RouteController extends Controller
      *     )
      * )
      */
->>>>>>> Stashed changes
 
     public function index(Request $request)
     {
@@ -173,9 +171,7 @@ class RouteController extends Controller
         return response()->json(RouteResource::collection($routes), 200);
     }
 
-<<<<<<< Updated upstream
-=======
-        /**
+    /**
      * @OA\Post(
      *     path="/v1/routes",
      *     summary="Crear una nueva ruta",
@@ -214,10 +210,6 @@ class RouteController extends Controller
      * )
      */
 
-    /**
-     * Store a newly created resource in storage.
-     */
->>>>>>> Stashed changes
     public function store(RouteRequest $request)
     {
         $data = $request->validated();
@@ -239,9 +231,7 @@ class RouteController extends Controller
         return response()->json(RouteResource::make($route), 201);
     }
 
-<<<<<<< Updated upstream
-=======
-       /**
+    /**
      * @OA\Get(
      *     path="/v1/routes/{route}",
      *     summary="Obtener una ruta por ID",
@@ -275,18 +265,11 @@ class RouteController extends Controller
      * )
      */
 
-    /**
-     * Display the specified resource.
-     */
->>>>>>> Stashed changes
     public function show(Route $route)
     {
         return response()->json(RouteResource::make($route), 200);
     }
 
-<<<<<<< Updated upstream
-    public function update(UpdateRouteRequest $request, Route $route)
-=======
     /**
      * @OA\Patch(
      *     path="/v1/routes/{route}",
@@ -341,11 +324,7 @@ class RouteController extends Controller
      * )
      */
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateRouteRequest $request, int $route)
->>>>>>> Stashed changes
+    public function update(UpdateRouteRequest $request, Route $route)
     {
         $data = $request->validated();
         $googleData = $this->calcularDistancia($data['origin'], $data['destination']);
@@ -354,25 +333,13 @@ class RouteController extends Controller
             return response()->json(['message' => 'Error al recalcular la ruta.'], 422);
         }
 
-<<<<<<< Updated upstream
         $data['distance_km'] = $googleData['distance_km'];
         $data['estimated_time'] = $googleData['estimated_time'];
-=======
-        if(empty($data['distance_km'])){
-            $data['distance_km'] = $googleData['distance_km'];
-        }
-        if(empty($data['estimated_time'])){
-            $data['estimated_time'] = $googleData['estimated_time'];
-        }
->>>>>>> Stashed changes
 
         $route->update($data);
         return response()->json(RouteResource::make($route), 200);
     }
 
-<<<<<<< Updated upstream
-    public function destroy(Route $route)
-=======
     /**
      * @OA\Delete(
      *     path="/v1/routes/{route}",
@@ -403,19 +370,12 @@ class RouteController extends Controller
      * )
      */
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $route)
->>>>>>> Stashed changes
+    public function destroy(Route $route)
     {
         $route->delete();
         return response()->json(['message' => 'Ruta eliminada correctamente'], 200);
     }
 
-<<<<<<< Updated upstream
-    public function restore(int $routeId)
-=======
     /**
      * @OA\Post(
      *     path="/v1/routes/{route}/restore",
@@ -446,8 +406,7 @@ class RouteController extends Controller
      * )
      */
 
-    public function restore(int $route)
->>>>>>> Stashed changes
+    public function restore(int $routeId)
     {
         try {
             $restoreRoute = Route::onlyTrashed()->findOrFail($routeId);

@@ -10,14 +10,12 @@ use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
-<<<<<<< Updated upstream
     public function __construct() { 
 
         $this->authorizeResource(Role::class, 'role'); 
     }
 
-=======
-        /**
+    /**
      * @OA\Get(
      *     path="/v1/roles",
      *     summary="Listar todos los roles",
@@ -50,7 +48,7 @@ class RoleController extends Controller
      *     )
      * )
      */
->>>>>>> Stashed changes
+
     public function index(Request $request)
     {
         $roles = Role::query();
@@ -66,8 +64,6 @@ class RoleController extends Controller
         return response()->json(RoleResource::collection($roles), 200);
     }
 
-<<<<<<< Updated upstream
-=======
     /**
      * @OA\Post(
      *     path="/v1/roles",
@@ -103,10 +99,6 @@ class RoleController extends Controller
      * )
      */
 
-    /**
-     * Store a newly created resource in storage.
-     */
->>>>>>> Stashed changes
     public function store(RoleRequest $request)
     {
         $data = $request->validated();
@@ -117,9 +109,6 @@ class RoleController extends Controller
         return response()->json(RoleResource::make($role), 201);
     }
 
-<<<<<<< Updated upstream
-    public function show(Role $role)
-=======
     /**
      * @OA\Get(
      *     path="/v1/roles/{rol}",
@@ -150,18 +139,11 @@ class RoleController extends Controller
      * )
      */
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Role $rol)
->>>>>>> Stashed changes
+    public function show(Role $role)
     {
         return response()->json(RoleResource::make($role), 200);
     }
 
-<<<<<<< Updated upstream
-    public function update(RoleRequest $request, Role $role)
-=======
     /**
      * @OA\Patch(
      *     path="/v1/roles/{rol}",
@@ -211,11 +193,7 @@ class RoleController extends Controller
      * )
      */
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(RoleRequest $request, int $rol)
->>>>>>> Stashed changes
+    public function update(RoleRequest $request, Role $role)
     {
         $data = $request->validated();
         $role->update($data);
@@ -223,9 +201,6 @@ class RoleController extends Controller
         return response()->json(RoleResource::make($role), 200);
     }
 
-<<<<<<< Updated upstream
-    public function destroy(Role $role)
-=======
     /**
      * @OA\Delete(
      *     path="/v1/roles/{rol}",
@@ -255,11 +230,7 @@ class RoleController extends Controller
      * )
      */
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $rol)
->>>>>>> Stashed changes
+    public function destroy(Role $role)
     {
         $role->delete();
 
@@ -267,10 +238,7 @@ class RoleController extends Controller
             'message' => 'Rol eliminado correctamente'
         ], 200);
     }
-
-<<<<<<< Updated upstream
-    public function restore(int $roleId)
-=======
+    
     /**
      * @OA\Post(
      *     path="/v1/roles/{rol}/restore",
@@ -299,8 +267,8 @@ class RoleController extends Controller
      *     )
      * )
      */
-    public function restore(int $rol)
->>>>>>> Stashed changes
+
+    public function restore(int $roleId)
     {
         try {
             $roleToRestore = Role::onlyTrashed()->findOrFail($roleId);
