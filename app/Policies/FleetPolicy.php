@@ -9,19 +9,31 @@ class FleetPolicy
 {
     public function viewAny(User $user): bool
     {
-        return in_array($user->role->name, ['Administrador', 'Logística', 'Conductor']);
+        return in_array($user->role->name, ['Administrador', 'Logística']);
     }
 
     public function view(User $user, Fleet $fleet): bool
     {
-        return in_array($user->role->name, ['Administrador', 'Logística', 'Conductor']);
+        return in_array($user->role->name, ['Administrador', 'Logística']);
     }
 
-    /**
-     * Solo el Administrador hace crud
-     */
-    public function create(User $user): bool { return $user->role->name === 'Administrador'; }
-    public function update(User $user, Fleet $fleet): bool { return $user->role->name === 'Administrador'; }
-    public function delete(User $user, Fleet $fleet): bool { return $user->role->name === 'Administrador'; }
-    public function restore(User $user, Fleet $fleet): bool { return $user->role->name === 'Administrador'; }
+    public function create(User $user): bool
+    {
+        return in_array($user->role->name, ['Administrador', 'Logística']);
+    }
+
+    public function update(User $user, Fleet $fleet): bool
+    {
+        return in_array($user->role->name, ['Administrador', 'Logística']);
+    }
+
+    public function delete(User $user, Fleet $fleet): bool
+    {
+        return in_array($user->role->name, ['Administrador', 'Logística']);
+    }
+
+    public function restore(User $user, Fleet $fleet): bool
+    {
+        return in_array($user->role->name, ['Administrador', 'Logística']);
+    }
 }

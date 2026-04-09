@@ -86,6 +86,8 @@ class FleetVehicleController extends Controller
      */
     public function store(AssignVehiclesToFleetRequest $request, Fleet $fleet): JsonResponse
     {
+        $this->authorize('update', $fleet);
+
         $assigned = [];
         $failed = [];
 
@@ -178,6 +180,8 @@ class FleetVehicleController extends Controller
 
     public function destroy(Fleet $fleet, Vehicle $vehicle): JsonResponse
     {
+        $this->authorize('update', $fleet);
+
         // Verificación 1: el vehículo pertenece a esta flota
         if ($vehicle->fleet_id !== $fleet->id) {
             return response()->json([

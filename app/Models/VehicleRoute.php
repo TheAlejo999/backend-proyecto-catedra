@@ -10,7 +10,7 @@ class VehicleRoute extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $table = 'vehicle_route';
+    protected $table = 'vehicle_routes';
 
     protected $fillable = [
         'vehicle_id',

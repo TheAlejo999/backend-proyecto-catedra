@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreDriverRequest extends FormRequest
@@ -14,7 +15,18 @@ class StoreDriverRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'exists:users,id', 'unique:drivers,user_id'],
+            'user_id' => [
+                'required',
+                'exists:users,id',
+                'unique:drivers,user_id',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    $user = User::with('role')->find($value);
+
+                    if (!$user?->role || $user->role->name !== 'Conductor') {
+                        $fail('El usuario seleccionado debe tener rol de Conductor.');
+                    }
+                },
+            ],
             'license_number' => ['required', 'string', 'unique:drivers,license_number'],
             'license_expiration' => ['required', 'date', 'after:today'],
         ];

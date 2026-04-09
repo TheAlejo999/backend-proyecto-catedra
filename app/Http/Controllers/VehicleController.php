@@ -15,7 +15,7 @@ class VehicleController extends Controller
 {
     public function __construct()
     {
-        // Resource authorization can be done in routes or individually in methods
+        $this->authorizeResource(Vehicle::class, 'vehicle');
     }
 
     /**

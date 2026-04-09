@@ -14,7 +14,7 @@ class DriverTest extends TestCase
 
     public function test_create_driver_success()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->conductor()->create();
 
         $response = $this->postJson('/api/v1/drivers', [
             'user_id' => $user->id,
@@ -23,6 +23,20 @@ class DriverTest extends TestCase
         ]);
 
         $response->assertStatus(201);
+    }
+
+    public function test_create_driver_fails_if_user_is_not_conductor()
+    {
+        $user = User::factory()->admin()->create();
+
+        $response = $this->postJson('/api/v1/drivers', [
+            'user_id' => $user->id,
+            'license_number' => 'ABC124',
+            'license_expiration' => '2027-01-01'
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['user_id']);
     }
 
     public function test_driver_cannot_be_deleted_if_has_vehicle()

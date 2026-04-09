@@ -14,9 +14,17 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         if (str_starts_with(static::class, 'Tests\\Feature\\')) {
-            $role = Role::firstOrCreate(['name' => 'Administrador']);
-            $user = User::factory()->create(['role_id' => $role->id]);
-            Sanctum::actingAs($user);
+            $this->actingAsRole('Administrador');
         }
+    }
+
+    protected function actingAsRole(string $roleName): User
+    {
+        $role = Role::firstOrCreate(['name' => $roleName]);
+        $user = User::factory()->create(['role_id' => $role->id]);
+
+        Sanctum::actingAs($user);
+
+        return $user;
     }
 }
