@@ -22,7 +22,7 @@ class RouteController extends Controller
     {
         $apiKey = env('ORS_API_KEY');
 
-        // Paso 1: Geocoding — convertir texto a coordenadas
+        // convertir texto a coordenadas
         $originCoords = $this->geocode($origin, $apiKey);
         if (!$originCoords)
             return null;
@@ -31,7 +31,7 @@ class RouteController extends Controller
         if (!$destinationCoords)
             return null;
 
-        // Paso 2: Routing — calcular distancia y tiempo
+        // calcular distancia y tiempo
         $response = Http::withHeaders([
             'Authorization' => $apiKey,
             'Content-Type' => 'application/json',
@@ -52,10 +52,10 @@ class RouteController extends Controller
 
         $summary = $data['routes'][0]['summary'];
 
-        // Distancia en metros → km
+        // Distancia a km
         $distanceKm = round($summary['distance'] / 1000, 2);
 
-        // Duración en segundos → HH:MM
+        // Tiempo a HH:MM
         $totalMinutes = intdiv((int) $summary['duration'], 60);
         $hours = intdiv($totalMinutes, 60);
         $minutes = $totalMinutes % 60;
@@ -73,7 +73,7 @@ class RouteController extends Controller
         ])->get('https://api.openrouteservice.org/geocode/search', [
                     'text' => $address,
                     'size' => 1,
-                    'boundary.country' => 'SV', // limitar a El Salvador
+                    'boundary.country' => 'SV', // Solo El Salvador
                 ]);
 
         if (!$response->ok())

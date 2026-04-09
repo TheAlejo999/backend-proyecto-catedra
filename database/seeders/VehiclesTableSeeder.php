@@ -18,12 +18,12 @@ class VehiclesTableSeeder extends Seeder
                 'model' => 'Hilux',
                 'year' => 2022,
                 'tank_capacity_gallons' => 80,
-                'type' => 'camion',       // ✅ minúsculas
+                'type' => 'camion',       
                 'capacity_weight_kg' => 5000,
                 'current_mileage' => 10000,
                 'fuel_percentage' => 80,
                 'fuel_consumption_per_km' => 0.2,
-                'status' => 'disponible', // ✅ minúsculas
+                'status' => 'disponible', 
             ],
         ]);
     }
