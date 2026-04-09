@@ -20,7 +20,7 @@ Route::group(['prefix' => 'v1'], function () {
 
         /**
          * CRUDs Principales usando resource controllers
-         */
+        */
         
         // Gestión de Roles
         Route::apiResource('roles', RoleController::class);
