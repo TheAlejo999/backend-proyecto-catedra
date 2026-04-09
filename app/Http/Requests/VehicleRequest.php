@@ -2,7 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
+use App\Enums\FleetType;
+use App\Models\Fleet;
 use Illuminate\Foundation\Http\FormRequest;
 
 class VehicleRequest extends FormRequest
@@ -18,7 +19,7 @@ class VehicleRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+    * @return array<string, array<mixed>|string>
      */
     public function rules(): array
     {
@@ -37,5 +38,37 @@ class VehicleRequest extends FormRequest
             'fuel_consumption_per_km'  => ['required', 'numeric', 'min:0.01', 'regex:/^\d{1,5}(\.\d{1,3})?$/'],
             'status' => ['required', 'in:disponible,mantenimiento,en_ruta']
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $fleetId = $this->input('fleet_id');
+            $vehicleType = $this->input('type');
+
+            if (empty($fleetId) || empty($vehicleType)) {
+                return;
+            }
+
+            $fleet = Fleet::find($fleetId);
+
+            if (!$fleet) {
+                return;
+            }
+
+            $allowedFleetType = match ($vehicleType) {
+                'pickup' => FleetType::Liviana->value,
+                'sedan' => FleetType::Ligera->value,
+                'camion', 'rastra' => FleetType::Pesada->value,
+                default => null,
+            };
+
+            if ($allowedFleetType !== null && $fleet->type->value !== $allowedFleetType) {
+                $validator->errors()->add(
+                    'fleet_id',
+                    'El tipo de vehículo no coincide con el tipo de flota permitido.'
+                );
+            }
+        });
     }
 }

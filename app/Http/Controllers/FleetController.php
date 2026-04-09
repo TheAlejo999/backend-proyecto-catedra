@@ -8,7 +8,6 @@ use App\Http\Resources\FleetResource;
 use App\Http\Resources\FleetWithVehiclesResource;
 use App\Models\Fleet;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateFleetRequest;
 
