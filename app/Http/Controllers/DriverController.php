@@ -19,9 +19,38 @@ class DriverController extends Controller
         $this->authorizeResource(Driver::class, 'driver');
     }
 
-    /**
+     /**
      * @OA\Get(
-     * path="/drivers",
+     *     path="/drivers",
+     *     summary="Listar todos los conductores",
+     *     tags={"Conductores"},
+     *     @OA\Parameter(
+     *         name="available",
+     *         in="query",
+     *         required=false,
+     *         description="Filtrar por disponibilidad (true/false)",
+     *         @OA\Schema(type="boolean", example=true)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de conductores obtenida exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="license_number", type="string", example="A12345678"),
+     *                     @OA\Property(property="license_expiration", type="string", example="2027-01-01"),
+     *                     @OA\Property(property="is_available", type="boolean", example=true),
+     *                     @OA\Property(property="user", type="object",
+     *                         @OA\Property(property="id", type="integer", example=1),
+     *                         @OA\Property(property="name", type="string", example="Juan Pérez"),
+     *                         @OA\Property(property="email", type="string", example="juan@email.com")
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     )
+     * )
      */
     public function index(Request $request)
     {
@@ -42,7 +71,40 @@ class DriverController extends Controller
 
     /**
      * @OA\Post(
-     * path="/drivers",
+     *     path="/drivers",
+     *     summary="Crear un nuevo conductor",
+     *     tags={"Conductores"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"user_id","license_number","license_expiration"},
+     *             @OA\Property(property="user_id", type="integer", example=1),
+     *             @OA\Property(property="license_number", type="string", example="A12345678"),
+     *             @OA\Property(property="license_expiration", type="string", format="date", example="2027-01-01")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Conductor creado exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Conductor creado exitosamente."),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="license_number", type="string", example="A12345678"),
+     *                 @OA\Property(property="license_expiration", type="string", example="2027-01-01"),
+     *                 @OA\Property(property="is_available", type="boolean", example=true)
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Datos inválidos",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The user_id field is required."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
      */
     public function store(StoreDriverRequest $request)
     {
@@ -56,7 +118,46 @@ class DriverController extends Controller
 
     /**
      * @OA\Get(
-     * path="/drivers/{driver}",
+     *     path="/drivers/{driver}",
+     *     summary="Ver detalle de un conductor",
+     *     tags={"Conductores"},
+     *     @OA\Parameter(
+     *         name="driver",
+     *         in="path",
+     *         required=true,
+     *         description="ID del conductor",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Detalle del conductor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="license_number", type="string", example="A12345678"),
+     *                 @OA\Property(property="license_expiration", type="string", example="2027-01-01"),
+     *                 @OA\Property(property="is_available", type="boolean", example=true),
+     *                 @OA\Property(property="user", type="object",
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="name", type="string", example="Juan Pérez"),
+     *                     @OA\Property(property="email", type="string", example="juan@email.com")
+     *                 ),
+     *                 @OA\Property(property="vehicle", type="object", nullable=true,
+     *                     @OA\Property(property="id", type="integer", example=1),
+     *                     @OA\Property(property="plate_number", type="string", example="P123456"),
+     *                     @OA\Property(property="status", type="string", example="disponible")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Conductor no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No query results for model [Driver].")
+     *         )
+     *     )
+     * )
      */
     public function show(Driver $driver)
     {
@@ -65,7 +166,47 @@ class DriverController extends Controller
 
     /**
      * @OA\Patch(
-     * path="/drivers/{driver}",
+     *     path="/drivers/{driver}",
+     *     summary="Actualizar un conductor",
+     *     tags={"Conductores"},
+     *     @OA\Parameter(
+     *         name="driver",
+     *         in="path",
+     *         required=true,
+     *         description="ID del conductor",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="license_number", type="string", example="A12345678"),
+     *             @OA\Property(property="license_expiration", type="string", format="date", example="2027-01-01")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Conductor actualizado exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Conductor actualizado exitosamente."),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Conductor no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No query results for model [Driver].")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Datos inválidos",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The license_number has already been taken."),
+     *             @OA\Property(property="errors", type="object")
+     *         )
+     *     )
+     * )
      */
     public function update(UpdateDriverRequest $request, Driver $driver)
     {
@@ -77,9 +218,40 @@ class DriverController extends Controller
         ], 200);
     }
 
-    /**
+     /**
      * @OA\Delete(
-     * path="/drivers/{driver}",
+     *     path="/drivers/{driver}",
+     *     summary="Eliminar un conductor",
+     *     tags={"Conductores"},
+     *     @OA\Parameter(
+     *         name="driver",
+     *         in="path",
+     *         required=true,
+     *         description="ID del conductor",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Conductor eliminado exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Conductor eliminado exitosamente.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="El conductor tiene un vehículo asignado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No se puede eliminar un conductor que tiene un vehículo asignado.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Conductor no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No query results for model [Driver].")
+     *         )
+     *     )
+     * )
      */
     public function destroy(Driver $driver)
     {
@@ -121,9 +293,53 @@ class DriverController extends Controller
         }
     }
 
-    /**
+     /**
      * @OA\Post(
-     * path="/drivers/{driver}/assign",
+     *     path="/drivers/{driver}/assign",
+     *     summary="Vincular conductor con un vehículo",
+     *     tags={"Conductores"},
+     *     @OA\Parameter(
+     *         name="driver",
+     *         in="path",
+     *         required=true,
+     *         description="ID del conductor",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"vehicle_id"},
+     *             @OA\Property(property="vehicle_id", type="integer", example=1)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Conductor vinculado exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Conductor vinculado al vehículo exitosamente."),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="plate_number", type="string", example="P123456"),
+     *                 @OA\Property(property="driver_id", type="integer", example=1),
+     *                 @OA\Property(property="status", type="string", example="disponible")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Conductor o vehículo no disponible",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="El conductor no está disponible.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Conductor o vehículo no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No query results for model [Driver].")
+     *         )
+     *     )
+     * )
      */
     public function assign(AssignDriverRequest $request, Driver $driver)
     {
@@ -156,9 +372,41 @@ class DriverController extends Controller
         ], 200);
     }
 
-    /**
+     /**
      * @OA\Delete(
-     * path="/drivers/{driver}/assign",
+     *     path="/drivers/{driver}/assign",
+     *     summary="Desvincular conductor de su vehículo",
+     *     tags={"Conductores"},
+     *     @OA\Parameter(
+     *         name="driver",
+     *         in="path",
+     *         required=true,
+     *         description="ID del conductor",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Conductor desvinculado exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Conductor desvinculado del vehículo exitosamente."),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="El conductor no tiene vehículo asignado o está en ruta",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="El conductor no tiene ningún vehículo asignado.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Conductor no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="No query results for model [Driver].")
+     *         )
+     *     )
+     * )
      */
     public function unassign(Driver $driver)
     {
