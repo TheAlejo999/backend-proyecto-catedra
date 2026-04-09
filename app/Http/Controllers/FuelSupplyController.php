@@ -212,7 +212,7 @@ class FuelSupplyController extends Controller
      */
     public function show(FuelSupply $fuelSupply)
     {
-        return response()->json(FuelSupplyResource::make($fuel_supply), 200);
+        return response()->json(FuelSupplyResource::make($fuelSupply), 200);
     }
 
     /**
