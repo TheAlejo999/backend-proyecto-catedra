@@ -22,40 +22,6 @@ class VehicleRouteController extends Controller
         $this->authorizeResource(VehicleRoute::class, 'vehicle_route');
     }
 
-    private function syncStatus(VehicleRoute $vehicleRoute): void
-    {
-        $now = Carbon::now();
-    
-        if (in_array($vehicleRoute->status, ['pendiente', 'cancelada', 'finalizada'])) return;
-    
-        if ($now->gte($vehicleRoute->estimated_arrival_datetime) && $vehicleRoute->status === 'en_progreso') {
-            $vehicleRoute->update(['status' => 'finalizada']);
-    
-            $vehicle = $vehicleRoute->vehicle;
-    
-            // Calcular galones actuales
-            $currentGallons = ($vehicle->fuel_percentage / 100) * $vehicle->tank_capacity_gallons;
-    
-            // Restar los galones usados en la ruta
-            $remainingGallons = max(0, $currentGallons - $vehicleRoute->estimated_fuel);
-    
-            // Calcular nuevo fuel_percentage
-            $newFuelPercentage = round(($remainingGallons / $vehicle->tank_capacity_gallons) * 100, 2);
-    
-            $vehicle->update([
-                'status'          => 'disponible',
-                'current_mileage' => $vehicle->current_mileage + $vehicleRoute->route->distance_km,
-                'fuel_percentage' => $newFuelPercentage,
-            ]);
-    
-            return;
-        }
-    
-        if ($now->gte($vehicleRoute->departure_datetime) && $vehicleRoute->status === 'aprobada') {
-            $vehicleRoute->update(['status' => 'en_progreso']);
-        }
-    }
-
     /**
      * @OA\Get(
      *     path="/v1/vehicle-route",
