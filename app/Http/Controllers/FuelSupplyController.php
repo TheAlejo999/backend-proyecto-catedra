@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 
 class FuelSupplyController extends Controller
 {
-        $this->authorizeResource(FuelSupply::class, 'fuel_supply');
+    public function __construct() { 
         $this->authorizeResource(FuelSupply::class, 'fuel_supply'); 
     }
     /**
