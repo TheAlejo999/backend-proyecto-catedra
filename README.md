@@ -24,7 +24,7 @@
 ## Descripción del Proyecto
 Este sistema es una API robusta diseñada para centralizar y optimizar la gestión de flotas vehiculares. Permite el control exhaustivo de unidades, conductores, asignación de rutas, monitoreo de combustible y programación de mantenimientos preventivos y correctivos.
 
-## Seguridad y Control de Acceso (RBAC)
+## Seguridad y Control de Acceso 
 El sistema implementa un modelo de seguridad basado en **Laravel Sanctum** para la autenticación y **Laravel Policies** para la autorización. Se han definido formalmente 3 roles:
 
 1. **Administrador**: Posee gestión total sobre todas las entidades, usuarios y configuraciones de seguridad.
@@ -58,10 +58,10 @@ El sistema implementa un modelo de seguridad basado en **Laravel Sanctum** para 
    `php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider" --force`
    `php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider" --tag=views --force`
    `php artisan l5-swagger:generate`
-   Agrega la siguiente variable a tu archivo `.env`: envL5_SWAGGER_GENERATE_ALWAYS=true
+   Agrega la siguiente variable a tu archivo `.env`: `envL5_SWAGGER_GENERATE_ALWAYS=true`
 
 ## Documentación de la API
 Una vez hayas configurado el proyecto correctamente, puedes acceder a la documentación interactiva hecha con Swagger en:
 `http://[dominio-del-proyecto]/api/documentation`
 
-Nota: si desea obtener la API KEY para probar la creacion de rutas, no dude en ponerse en contacto con nosotros.
+Nota: si desea obtener la API KEY para probar la creacion de rutas o existen dudas, no dude en ponerse en contacto con nosotros.
