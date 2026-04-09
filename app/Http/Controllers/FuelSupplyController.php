@@ -296,21 +296,22 @@ class FuelSupplyController extends Controller
         }
 
         $fuelSupply->update($data);
+        $fuelSupply->refresh();
 
-        if (!empty($data['status']) && $data['status'] === 'completado') {
+        if ($fuelSupply->status === 'completado') {
             $vehicle = Vehicle::findOrFail($fuelSupply->vehicle_id);
             $vehicle->update(['fuel_percentage' => 100]);
-
+            $vehicle->refresh();
+            
             $pendingRoute = VehicleRoute::where('vehicle_id', $vehicle->id)
-                ->where('status', 'pendiente')
-                ->first();
+            ->where('route_id', $fuelSupply->route_id) // ← filtrar también por route_id
+            ->where('status', 'pendiente')
+            ->first();
+            
 
             if ($pendingRoute) {
-                $currentGallons = ($vehicle->fuel_percentage / 100) * $vehicle->tank_capacity_gallons;
-                if ($currentGallons >= $pendingRoute->estimated_fuel) {
-                    $pendingRoute->update(['status' => 'aprobada']);
-                    $vehicle->update(['status' => 'en_ruta']);
-                }
+                $pendingRoute->update(['status' => 'aprobada']);
+                $vehicle->update(['status' => 'en_ruta']);
             }
         }
 
