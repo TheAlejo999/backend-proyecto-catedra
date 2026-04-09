@@ -17,7 +17,7 @@ class VehicleRouteTableSeeder extends Seeder
                 'estimated_fuel' => 15,
                 'departure_datetime' => now(),
                 'estimated_arrival_datetime' => now()->addHours(2),
-                'status' => 'EN_CURSO',
+                'status' => 'en_progreso',
             ],
         ]);
     }
