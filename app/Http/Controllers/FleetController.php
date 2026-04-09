@@ -55,39 +55,47 @@ class FleetController extends Controller
 
     /**
      * @OA\Post(
-     *     path="/v1/vehicle-route",
-     *     summary="Asignar una ruta a un vehículo",
-     *     tags={"Asignación de rutas"},
+     *     path="/fleets",
+     *     summary="Crear una nueva flota",
+     *     tags={"Flotas"},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"vehicle_id","route_id","load_weight","departure_datetime","status"},
-     *             @OA\Property(property="vehicle_id", type="integer", example=1, description="Debe existir en la BD y estar en estado disponible"),
-     *             @OA\Property(property="route_id", type="integer", example=1, description="Debe existir en la BD"),
-     *             @OA\Property(property="load_weight", type="number", example=1200.00, description="Entre 0.01 y 25000 kg, no puede exceder la capacidad del vehículo"),
-     *             @OA\Property(property="departure_datetime", type="string", example="2026-04-19 12:00:00", description="Debe ser igual o posterior a hoy"),
-     *             @OA\Property(property="status", type="string", enum={"pendiente","aprobada","en_progreso","finalizada","cancelada"}, example="aprobada")
+     *             required={"name","type"},
+     *             @OA\Property(property="name", type="string", example="Flota Norte"),
+     *             @OA\Property(property="type", type="string", enum={"liviana","pesada","ligera"}, example="liviana"),
+     *             @OA\Property(property="description", type="string", nullable=true, example="Flota para rutas del norte")
      *         )
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="Ruta asignada. Si hay combustible suficiente el status será 'aprobada'. Si no hay combustible suficiente el status será 'pendiente' y se generará una orden de abastecimiento automáticamente.",
+     *         description="Flota creada exitosamente",
      *         @OA\JsonContent(
-     *             @OA\Property(property="id", type="integer", example=1),
-     *             @OA\Property(property="vehicle_id", type="object", description="Datos del vehículo"),
-     *             @OA\Property(property="route_id", type="object", description="Datos de la ruta"),
-     *             @OA\Property(property="load_weight", type="number", example=1200.00),
-     *             @OA\Property(property="estimated_fuel", type="number", example=82.13, description="Calculado automáticamente"),
-     *             @OA\Property(property="departure_datetime", type="string", example="2026-04-19 12:00:00"),
-     *             @OA\Property(property="estimated_arrival_datetime", type="string", example="2026-04-19 14:00:00", description="Calculado automáticamente"),
-     *             @OA\Property(property="status", type="string", example="aprobada")
+     *             @OA\Property(property="message", type="string", example="Flota creada exitosamente."),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Flota Norte"),
+     *                 @OA\Property(property="type", type="string", example="liviana"),
+     *                 @OA\Property(property="type_label", type="string", example="Liviana"),
+     *                 @OA\Property(property="description", type="string", example="Flota para rutas del norte"),
+     *                 @OA\Property(property="vehicles_count", type="integer", example=0),
+     *                 @OA\Property(property="created_at", type="string", example="2026-01-01 00:00:00")
+     *             )
      *         )
      *     ),
      *     @OA\Response(
      *         response=422,
      *         description="Datos inválidos",
      *         @OA\JsonContent(
-     *             @OA\Property(property="message", type="string", example="El vehículo no está disponible.")
+     *             @OA\Property(property="message", type="string", example="The name field is required."),
+     *             @OA\Property(property="errors", type="object",
+     *                 @OA\Property(property="name", type="array",
+     *                     @OA\Items(type="string", example="El nombre de la flota es obligatorio.")
+     *                 ),
+     *                 @OA\Property(property="type", type="array",
+     *                     @OA\Items(type="string", example="El tipo debe ser: liviana, pesada o ligera.")
+     *                 )
+     *             )
      *         )
      *     )
      * )
