@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\IndexVehicleRequest;
+use App\Http\Requests\IndexVehicleRequest; 
 use App\Http\Requests\UpdateVehicleRequest;
 use App\Http\Requests\VehicleRequest;
 use App\Http\Resources\VehicleResource;
@@ -13,19 +13,25 @@ use App\Models\Driver;
 
 class VehicleController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Vehicle::class, 'vehicle');
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-
         $vehicles = Vehicle::query();
 
         if ($request->boolean('trashed')) {
-            $vehicles = $vehicles->onlyTrashed()->get();
-        } else {
-            //Considerare cuales de estos filtros realmente ayudan al negocio
-            $vehicles = $vehicles
+            $trashedVehicles = $vehicles->onlyTrashed()->paginate(16);
+            return response()->json(VehicleResource::collection($trashedVehicles), 200);
+        } 
+
+        // Considerare cuales de estos filtros realmente ayudan al negocio
+        $vehicles = $vehicles
             ->when($request->has('plate'), function ($query) use ($request) {
                 $query->where('plate_number', $request->input('plate'));
             })->when($request->has('year'), function ($query) use ($request) {
@@ -41,10 +47,9 @@ class VehicleController extends Controller
             })->when($request->has('mileage'), function ($query) use ($request) {
                 $query->where('current_mileage', 'like', $request->input('mileage') . '%');
             })
-                ->paginate(16);
+            ->paginate(16);
 
-            return response()->json(VehicleResource::collection($vehicles), 200);
-        }
+        return response()->json(VehicleResource::collection($vehicles), 200);
     }
 
     /**
@@ -80,45 +85,41 @@ class VehicleController extends Controller
         return response()->json(VehicleResource::make($vehicle), 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateVehicleRequest $request, int $vehicle)
+
+    public function update(UpdateVehicleRequest $request, Vehicle $vehicle)
     {
-        //el conductor que estaba asignado antes ahora pasa a disponible y 
-        //el nuevo conductor si estaba sin asignar entonces lo cambiamos a asignado y 
-        // estaba asignado lo cambiamos a sin asignar. ESTO ESTA POR DEFINIRSE, AUN NO ESTA ACORDADO POR EL EQUIPO
-
-        $updatedVehicle = Vehicle::findOrFail($vehicle);
-
         $data = $request->validated();
 
-        $updatedVehicle->update($data);
+        $vehicle->update($data);
 
-        return response()->json(VehicleResource::make($updatedVehicle), 200);
+        return response()->json(VehicleResource::make($vehicle), 200);
+    }
+
+    public function destroy(Vehicle $vehicle)
+    {
+        $vehicle->delete();
+
+        return response()->json([
+            'message' => 'Vehiculo eliminado correctamente'
+        ], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Restore a trashed resource.
      */
-    public function destroy(int $vehicle)
-    {
-        $deleteVehicle = Vehicle::findOrFail($vehicle)->delete();
-
-        if ($deleteVehicle) {
-            return response()->json([
-                'message' => 'Vehiculo eliminado correctamente'
-            ], 200);
-        }
-    }
-
     public function restore(int $vehicle)
     {
         try {
-            $restoreVehicle = Vehicle::onlyTrashed()->findOrFail($vehicle)->restore();
+            // Buscamos el vehículo eliminado
+            $vehicleToRestore = Vehicle::onlyTrashed()->findOrFail($vehicle);
+            $this->authorize('restore', $vehicleToRestore);
+
+            $vehicleToRestore->restore();
+
             return response()->json([
                 'message' => 'Vehiculo restaurado correctamente'
             ], 200);
+            
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'El vehiculo ingresado no existe entre los eliminados'
