@@ -13,160 +13,88 @@ use Illuminate\Http\Request;
 
 class FuelSupplyController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
+    public function __construct()
     {
-        $fuelSupply = FuelSupply::query();
-
-        if ($request->boolean('trashed')) {
-            $fuelSupply = $fuelSupply->onlyTrashed()->get();
-        } else {
-            $fuelSupply = $fuelSupply
-                ->when($request->has('vehicle'), function ($query) use ($request) {
-                    $query->where('vehicle_id', 'like', $request->input('vehicle') . '%');
-
-                })->when($request->has('route'), function ($query) use ($request) {
-                    $query->where('route_id', 'like', $request->input('route') . '%');
-
-                })->when($request->has('date'), function ($query) use ($request) {
-                    $query->where('date', $request->input('date'));
-
-                })->paginate(16);
-
-            return response()->json(FuelSupplyResource::collection($fuelSupply), 200);
-        }
+        $this->authorizeResource(FuelSupply::class, 'fuel_supply');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    public function index(Request $request)
+    {
+        $query = FuelSupply::query();
+
+        if ($request->boolean('trashed')) {
+            $fuelSupplies = $query->onlyTrashed()->get();
+            return response()->json(FuelSupplyResource::collection($fuelSupplies), 200);
+        }
+
+        $fuelSupplies = $query
+            ->when($request->has('vehicle'), fn($q) => $q->where('vehicle_id', $request->input('vehicle')))
+            ->when($request->has('date'), fn($q) => $q->where('date', $request->input('date')))
+            ->paginate(16);
+
+        return response()->json(FuelSupplyResource::collection($fuelSupplies), 200);
+    }
+
     public function store(FuelSupplyRequest $request)
     {
         $data = $request->validated();
     
-        $assigned = VehicleRoute::where('vehicle_id', $data['vehicle_id'])
-            ->where('route_id', $data['route_id'])
-            ->exists();
-    
-        if (!$assigned) {
-            return response()->json([
-                'message' => 'La ruta seleccionada no está asignada a este vehículo.'
-            ], 422);
+        if (!VehicleRoute::where('vehicle_id', $data['vehicle_id'])->where('route_id', $data['route_id'])->exists()) {
+            return response()->json(['message' => 'La ruta no está asignada a este vehículo.'], 422);
         }
     
-        // Si no se manda fecha, usar la fecha actual
-        if (empty($data['date'])) {
-            $data['date'] = now()->toDateString();
-        }
-    
-        // Precio por galón por si no se envia en el request
-        $price = !empty($data['price_per_gallon']) ? (float) $data['price_per_gallon'] : 4.60;
-        $data['price_per_gallon'] = $price;
-    
-        // Calcular total_cost por si no se envia en el request
-        if (empty($data['total_cost'])) {
-            $data['total_cost'] = round($price * $data['amount_gallons'], 2);
-        }
-    
-        $data['status'] = 'pendiente'; // siempre pendiente al crear
+        $data['date'] = $data['date'] ?? now()->toDateString();
+        $data['status'] = 'pendiente'; 
     
         $fuelSupply = FuelSupply::create($data);
-        $fuelSupply->refresh();
-    
         return response()->json(FuelSupplyResource::make($fuelSupply), 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(FuelSupply $fuelSupply)
+    public function show(FuelSupply $fuel_supply)
     {
-        return response()->json(FuelSupplyResource::make($fuelSupply), 200);
+        return response()->json(FuelSupplyResource::make($fuel_supply), 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateFuelSupplyRequest $request, int $fuelSupply)
+    public function update(UpdateFuelSupplyRequest $request, FuelSupply $fuel_supply)
     {
-        $updatedFuelSupply = FuelSupply::findOrFail($fuelSupply);
-
-        if ($updatedFuelSupply->status === 'completado') {
-            return response()->json([
-                'message' => 'Esta orden de abastecimiento ya fue completada y no puede editarse.'
-            ], 422);
+        if ($fuel_supply->status === 'completado') {
+            return response()->json(['message' => 'Esta orden ya fue completada.'], 422);
         }
 
         $data = $request->validated();
+        $fuel_supply->update($data);
 
-        // Si no se manda fecha
-        if (empty($data['date'])) {
-            $data['date'] = now()->toDateString();
-        }
-
-        // Precio por galón por si no se envia en el request
-        $price = !empty($data['price_per_gallon']) ? (float) $data['price_per_gallon'] : 4.60;
-        $data['price_per_gallon'] = $price;
-
-        // Calcular total_cost por si no se envia en el request
-        if (empty($data['total_cost'])) {
-            $data['total_cost'] = round($price * $updatedFuelSupply->amount_gallons, 2);
-        }
-
-        $updatedFuelSupply->update($data);
-
-        // Si se marca como completado, disparar lógica del vehículo y ruta
         if (!empty($data['status']) && $data['status'] === 'completado') {
-
-            // Actualizar fuel_percentage del vehículo a 100%
-            $vehicle = Vehicle::findOrFail($updatedFuelSupply->vehicle_id);
+            $vehicle = Vehicle::findOrFail($fuel_supply->vehicle_id);
             $vehicle->update(['fuel_percentage' => 100]);
-
-            // Verificar si hay una ruta pendiente y aprobarla
-            $pendingRoute = VehicleRoute::where('vehicle_id', $vehicle->id)
-                ->where('status', 'pendiente')
-                ->first();
-
-            if ($pendingRoute) {
-                $currentGallons = ($vehicle->fuel_percentage / 100) * $vehicle->tank_capacity_gallons;
-
-                if ($currentGallons >= $pendingRoute->estimated_fuel) {
-                    $pendingRoute->update(['status' => 'aprobada']);
-                    $vehicle->update(['status' => 'en_ruta']);
-                }
+            
+            $pendingRoute = VehicleRoute::where('vehicle_id', $vehicle->id)->where('status', 'pendiente')->first();
+            if ($pendingRoute && ($vehicle->fuel_percentage / 100 * $vehicle->tank_capacity_gallons) >= $pendingRoute->estimated_fuel) {
+                $pendingRoute->update(['status' => 'aprobada']);
+                $vehicle->update(['status' => 'en_ruta']);
             }
         }
 
-        return response()->json(FuelSupplyResource::make($updatedFuelSupply), 200);
+        return response()->json(FuelSupplyResource::make($fuel_supply), 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(int $fuelSupply)
+    public function destroy(FuelSupply $fuel_supply)
     {
-        $deleteFuelSupply = FuelSupply::findOrFail($fuelSupply)->delete();
-
-        if ($deleteFuelSupply) {
-            return response()->json([
-                'message' => 'Abastecimiento de combustible eliminado correctamente'
-            ], 200);
-        }
+        $fuel_supply->delete();
+        return response()->json(['message' => 'Abastecimiento eliminado correctamente'], 200);
     }
 
-    public function restore(int $fuelSupply)
+    public function restore(int $fuelSupplyId)
     {
         try {
-            $restoreFuelSupply = FuelSupply::onlyTrashed()->findOrFail($fuelSupply)->restore();
-            return response()->json([
-                'message' => 'Abastecimiento de combustible restaurado correctamente'
-            ], 200);
+            $restoreFuelSupply = FuelSupply::onlyTrashed()->findOrFail($fuelSupplyId);
+
+            $this->authorize('restore', $restoreFuelSupply);
+
+            $restoreFuelSupply->restore();
+            return response()->json(['message' => 'Abastecimiento restaurado correctamente'], 200);
         } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'message' => 'El abastecimiento de combustible ingresado no existe entre los eliminados'
-            ], 404);
+            return response()->json(['message' => 'El registro no existe entre los eliminados'], 404);
         }
     }
 }
