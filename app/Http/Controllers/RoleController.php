@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RoleRequest;
 use App\Http\Requests\RolRequest;
+use App\Http\Resources\RoleResource;
 use App\Http\Resources\RolResource;
 use App\Models\Rol;
+use App\Models\Role;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
-class RolController extends Controller
+class RoleController extends Controller
 {
     public function index(Request $request)
     {
-        $rol = Rol::query();
+        $rol = Role::query();
 
         if ($request->boolean('trashed')) {
             $rol = $rol->onlyTrashed()->get();
@@ -21,43 +24,42 @@ class RolController extends Controller
                 ->when($request->has('name'), function ($query) use ($request) {
                     $query->where('name', 'like', $request->input('name') . '%');
                 })->get();
-
-            return response()->json(RolResource::collection($rol), 200);
         } 
+        return response()->json(RoleResource::collection($rol), 200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(RolRequest $request)
+    public function store(RoleRequest $request)
     {
         $data = $request->validated();
 
-        $rol = Rol::create($data);
+        $rol = Role::create($data);
         $rol->refresh();
 
-        return response()->json(RolResource::make($rol), 201);
+        return response()->json(RoleResource::make($rol), 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Rol $rol)
+    public function show(Role $rol)
     {
-        return response()->json(RolResource::make($rol), 200);
+        return response()->json(RoleResource::make($rol), 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(RolRequest $request, int $rol)
+    public function update(RoleRequest $request, int $rol)
     {
-        $updatedRol = Rol::findOrFail($rol);
+        $updatedRol = Role::findOrFail($rol);
 
         $data = $request->validated();
         $updatedRol->update($data);
 
-        return response()->json(RolResource::make($updatedRol), 200);
+        return response()->json(RoleResource::make($updatedRol), 200);
     }
 
     /**
@@ -65,7 +67,7 @@ class RolController extends Controller
      */
     public function destroy(int $rol)
     {
-        $deleteRol = Rol::findOrFail($rol)->delete();
+        $deleteRol = Role::findOrFail($rol)->delete();
 
         if ($deleteRol) {
             return response()->json([
@@ -77,7 +79,7 @@ class RolController extends Controller
     public function restore(int $rol)
     {
         try {
-            $restoreRol = Rol::onlyTrashed()->findOrFail($rol)->restore();
+            $restoreRol = Role::onlyTrashed()->findOrFail($rol)->restore();
             return response()->json([
                 'message' => 'Ruta restaurada correctamente'
             ], 200);

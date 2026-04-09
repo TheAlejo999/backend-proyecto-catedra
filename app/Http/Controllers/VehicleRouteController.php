@@ -89,14 +89,14 @@ class VehicleRouteController extends Controller
         $vehicle = Vehicle::findOrFail($data['vehicle_id']);
         $route   = Route::findOrFail($data['route_id']);
 
-        // Validar que el vehículo esté disponible
+        // Validar que el vehículo esta disponible
         if ($vehicle->status->value !== 'disponible') {
             return response()->json([
                 'message' => 'El vehículo no está disponible.'
             ], 422);
         }
 
-        // Validar que la carga no exceda la capacidad del vehículo
+        // Validar que la carga no exceda la capacidad del vehiculo
         if ($data['load_weight'] > $vehicle->capacity_weight_kg) {
             return response()->json([
                 'message' => 'La carga excede la capacidad del vehículo (' . $vehicle->capacity_weight_kg . ' kg).'

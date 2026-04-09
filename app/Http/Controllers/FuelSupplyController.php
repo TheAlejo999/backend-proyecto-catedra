@@ -56,16 +56,16 @@ class FuelSupplyController extends Controller
             ], 422);
         }
     
-        // Si no se envía fecha, usar la fecha actual
+        // Si no se manda fecha, usar la fecha actual
         if (empty($data['date'])) {
             $data['date'] = now()->toDateString();
         }
     
-        // Precio por galón por defecto si viene vacío
+        // Precio por galón por si no se envia en el request
         $price = !empty($data['price_per_gallon']) ? (float) $data['price_per_gallon'] : 4.60;
         $data['price_per_gallon'] = $price;
     
-        // Calcular total_cost automáticamente si no se proporciona
+        // Calcular total_cost por si no se envia en el request
         if (empty($data['total_cost'])) {
             $data['total_cost'] = round($price * $data['amount_gallons'], 2);
         }
@@ -101,16 +101,16 @@ class FuelSupplyController extends Controller
 
         $data = $request->validated();
 
-        // Si no se envía fecha, usar la fecha actual
+        // Si no se manda fecha
         if (empty($data['date'])) {
             $data['date'] = now()->toDateString();
         }
 
-        // Precio por galón por defecto si viene vacío
+        // Precio por galón por si no se envia en el request
         $price = !empty($data['price_per_gallon']) ? (float) $data['price_per_gallon'] : 4.60;
         $data['price_per_gallon'] = $price;
 
-        // Calcular total_cost automáticamente si no se proporciona
+        // Calcular total_cost por si no se envia en el request
         if (empty($data['total_cost'])) {
             $data['total_cost'] = round($price * $updatedFuelSupply->amount_gallons, 2);
         }

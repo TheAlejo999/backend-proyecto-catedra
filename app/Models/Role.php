@@ -6,14 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Route extends Model
+class Role extends Model
 {
     use HasFactory, SoftDeletes;
-
-    protected $fillable = [
-        'origin',
-        'destination',
-        'distance_km',
-        'estimated_time'
+        protected $fillable = [
+        'name'
     ];
 }

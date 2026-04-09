@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\FuelSupplyController;
+use App\Http\Controllers\RolController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\RouteController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VehicleRouteController;
@@ -19,12 +21,12 @@ Route::group(['prefix' => 'v1'], function () {
     //  Route::get('profile', [AuthController::class, 'profile']);
 
     // Roles
-    Route::get('roles', [VehicleController::class, 'index']);
-    Route::post('roles', [VehicleController::class, 'store']);
-    Route::get('/roles/{rol}', [VehicleController::class, 'show']);
-    Route::patch('/roles/{rol}', [VehicleController::class, 'update']);
-    Route::delete('/roles/{rol}', [VehicleController::class, 'destroy']);
-    Route::post('/roles/{rol}/restore', [VehicleController::class, 'restore']);
+    Route::get('roles', [RoleController::class, 'index']);
+    Route::post('roles', [RoleController::class, 'store']);
+    Route::get('/roles/{rol}', [RoleController::class, 'show']);
+    Route::patch('/roles/{rol}', [RoleController::class, 'update']);
+    Route::delete('/roles/{rol}', [RoleController::class, 'destroy']);
+    Route::post('/roles/{rol}/restore', [RoleController::class, 'restore']);
 
     // Vehicles
     Route::get('vehicles', [VehicleController::class, 'index']);

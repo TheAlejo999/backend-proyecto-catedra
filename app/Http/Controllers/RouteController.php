@@ -13,44 +13,72 @@ class RouteController extends Controller
 {
     private function calcularDistancia(string $origin, string $destination): array|null
     {
-        $response = Http::get('https://maps.googleapis.com/maps/api/distancematrix/json', [
-            'origins' => $origin,
-            'destinations' => $destination,
-            'language' => 'es',
-            'units' => 'metric',
-            'key' => env('GOOGLE_MAPS_API_KEY'),
+        $apiKey = env('ORS_API_KEY');
+
+        // Paso 1: Geocoding — convertir texto a coordenadas
+        $originCoords = $this->geocode($origin, $apiKey);
+        if (!$originCoords) return null;
+    
+        $destinationCoords = $this->geocode($destination, $apiKey);
+        if (!$destinationCoords) return null;
+    
+        // Paso 2: Routing — calcular distancia y tiempo
+        $response = Http::withHeaders([
+            'Authorization' => $apiKey,
+            'Content-Type'  => 'application/json',
+        ])->post('https://api.openrouteservice.org/v2/directions/driving-car', [
+            'coordinates' => [
+                [$originCoords['lng'], $originCoords['lat']],
+                [$destinationCoords['lng'], $destinationCoords['lat']],
+            ],
         ]);
-
-        if (!$response->ok()) {
-            return null;
-        }
-
+    
+        if (!$response->ok()) return null;
+    
         $data = $response->json();
-
-        // Verificar que la API devolvió resultados válidos
-        if (
-            $data['status'] !== 'OK' ||
-            $data['rows'][0]['elements'][0]['status'] !== 'OK'
-        ) {
-            return null;
-        }
-
-        $element = $data['rows'][0]['elements'][0];
-
-        // Convertir distancia de metros a km
-        $distanceKm = round($element['distance']['value'] / 1000, 2);
-
-        // Convertir segundos a formato HH:MM
-        $totalMinutes = intdiv($element['duration']['value'], 60);
-        $hours = intdiv($totalMinutes, 60);
-        $minutes = $totalMinutes % 60;
+    
+        if (empty($data['routes'][0]['summary'])) return null;
+    
+        $summary = $data['routes'][0]['summary'];
+    
+        // Distancia en metros → km
+        $distanceKm = round($summary['distance'] / 1000, 2);
+    
+        // Duración en segundos → HH:MM
+        $totalMinutes  = intdiv((int) $summary['duration'], 60);
+        $hours         = intdiv($totalMinutes, 60);
+        $minutes       = $totalMinutes % 60;
         $estimatedTime = sprintf('%02d:%02d', $hours, $minutes);
-
+    
         return [
-            'distance_km' => $distanceKm,
+            'distance_km'    => $distanceKm,
             'estimated_time' => $estimatedTime,
         ];
     }
+
+    private function geocode(string $address, string $apiKey): array|null
+{
+    $response = Http::withHeaders([
+        'Authorization' => $apiKey,
+    ])->get('https://api.openrouteservice.org/geocode/search', [
+        'text'               => $address,
+        'size'               => 1,
+        'boundary.country'   => 'SV', // limitar a El Salvador
+    ]);
+
+    if (!$response->ok()) return null;
+
+    $data = $response->json();
+
+    if (empty($data['features'][0]['geometry']['coordinates'])) return null;
+
+    $coords = $data['features'][0]['geometry']['coordinates'];
+
+    return [
+        'lng' => $coords[0],
+        'lat' => $coords[1],
+    ];
+}
 
     public function index(Request $request)
     {
