@@ -327,6 +327,18 @@ class RouteController extends Controller
     public function update(UpdateRouteRequest $request, Route $route)
     {
         $data = $request->validated();
+
+        //se verifica que no exista una ruta con el mismo origen y destino en la BD
+        $exists = Route::where('origin', $data['origin'])
+            ->where('destination', $data['destination'])
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'message' => 'Ya existe una ruta con ese origen y destino'
+            ], 422);
+        }
+        
         $googleData = $this->calcularDistancia($data['origin'], $data['destination']);
 
         if (!$googleData) {
